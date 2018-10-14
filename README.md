@@ -23,7 +23,7 @@ We used Python 3.6 with Keras and Tensorflow and some other necessary packages.
 ## Directory structure and files
 The folder train_img contains all the images downloaded as the train_v2.zip
 ```
-├── NagyHFDataPrep.ipynb.py
+├── NagyHFDataPrep.ipynb
 └── data/
     ├── train_ship_segmentations_v2.csv
     └── train_img/
