@@ -17,7 +17,7 @@ We are given satellite images (more accurately sections of satellite images), wh
 The training data is given as images and masks for the ships (in a run length encoded format). If an image contains multiple ships, each ship has a separate record, mask. 
 
 ## Prerequisites
-The training data can be downloaded from the competition's website after agreeing to the terms. Please note that we are not allowed to share the dataset with anyone who didn't agree to the terms of the competition and the data might not be available after the submission deadline. 
+The training data can be downloaded from the competition's website after agreeing to the terms. Please note that the data might not be available after the submission deadline. 
 We used Python 3.6 with Keras and Tensorflow and some other necessary packages. 
 
 ## Directory structure and files
