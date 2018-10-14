@@ -1,7 +1,7 @@
 # Ship detection on satellite images using Deep learning
 The scripts found in this repository were written as the project assignment for the course Deep Learning in Practice with Python and LUA (VITMAV45). As part of this project, we aim to provide a solution for the Airbus Ship Detection Challenge organized by Kaggle. More information about the competition can be found on its website: https://www.kaggle.com/c/airbus-ship-detection
 
-Team name: vitmav45-ShipSeakers
+Team name: ShipSeakers
 
 Team members:
 * Csatlós, Tamás Péter (cstompet@gmail.com)
