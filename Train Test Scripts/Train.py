@@ -110,14 +110,14 @@ def disp_image_with_map(img_matrix, mask_matrix):
 # Reference: https://stanford.edu/~shervine/blog/keras-how-to-generate-data-on-the-fly
 class DataGenerator(Sequence):
 
-    def __init__(self, list_IDs, labels, img_path_prefix, batch_size=32, dim=(32, 32, 32),
+    def __init__(self, list_IDs, ship_seg_df, img_path_prefix, batch_size=32, dim=(32, 32, 32),
                  n_channels=1, n_classes=10, shuffle=True):
         # Initialization
         self.dim = dim  # dataset's dimension
         self.img_prefix = img_path_prefix  # location of the dataset
         self.batch_size = batch_size  # number of data/epoch
-        self.labels = labels  # "img":"rle mask" dictionary
-        self.list_IDs = list_IDs  # images filenames
+        self.ship_seg_df = ship_seg_df  # a dataframe storing the filenames and ship masks
+        self.list_IDs = list_IDs  # indexes for the given subset referring to the rows of ship_seg_df
         self.n_channels = n_channels  # number of rgb chanels
         # self.n_classes = n_classes                 # ???
         self.shuffle = shuffle  # shuffle the data
@@ -164,14 +164,14 @@ class DataGenerator(Sequence):
         # Generate data
         for i, ID in enumerate(tmp_list):
             # read image called "ID"
-            # X[i] = read_transform_image(self.img_prefix + "/" + ID)
-            X[i] = cv2.resize(read_transform_image(self.img_prefix + "/" + ID), (192, 192))
+            X[i] = read_transform_image(self.img_prefix + "/" + self.ship_seg_df.at[ID, 'ImageId'])
+            # X[i] = cv2.resize(read_transform_image(self.img_prefix + "/" + self.ship_seg_df.at[ID, 'ImageId']), (192, 192))
             # print("\n\n{}\n\n".format(X[i]))
 
             # store masks
-            mask = rle_decode(labels[ID][0])
-            # Y[i] = np.atleast_3d(mask)
-            Y[i] = np.atleast_3d(cv2.resize(mask, (192, 192), interpolation=cv2.INTER_NEAREST))
+            mask = rle_decode(self.ship_seg_df.at[ID, 'EncodedPixels'])
+            Y[i] = np.atleast_3d(mask)
+            # Y[i] = np.atleast_3d(cv2.resize(mask, (192, 192), interpolation=cv2.INTER_NEAREST))
 
         return X, Y
 
@@ -196,47 +196,54 @@ df_train = df_train.reset_index(drop=True)
 valid_split = 0.15
 test_split = 0.15
 
-train_img_ids, valid_img_ids, test_img_ids= separate(df_train["ImageId"].values, valid_split, test_split)
+train_img_ids, valid_img_ids, test_img_ids = separate(df_train.index.values, valid_split, test_split)
 
 # dictionaries for the generators
 partitions = {"train": train_img_ids, "validation": valid_img_ids, "test":test_img_ids}
-# {"imgID1" : rle mask1, "imgID2" : rle_mask1, ... }
-labels = dict()
+# # {"imgID1" : rle mask1, "imgID2" : rle_mask1, ... }
+# labels = dict()
+#
+# for i in tqdm(range(df_train["ImageId"].values.shape[0])):
+#     labels[df_train["ImageId"].values[i]] = df_train.loc[df_train.ImageId == df_train["ImageId"].values[i]].EncodedPixels.values
 
-for i in tqdm(range(df_train["ImageId"].values.shape[0])):
-    labels[df_train["ImageId"].values[i]] = df_train.loc[df_train.ImageId == df_train["ImageId"].values[i]].EncodedPixels.values
 
-
-img_shape = read_transform_image("../data/train_img/"+train_img_ids[0]).shape
+image_path = "../data/train_img"
+img_shape = read_transform_image(image_path + "/"+ df_train.at[0,'ImageId']).shape
 print("RGB channels: ", img_shape[2])
 print("Image size:", img_shape[0:2])
 rgb_channels_number = img_shape[2] #3
-dimension_of_the_image = (192,192)#[0:2] #(768. 768)
+dimension_of_the_image = img_shape[0:2] #(768. 768) (192,192)#
 batch_size = 1
 
 training_generator = DataGenerator(
     partitions["train"],
-    labels,
-    "../data/train_img",
+    df_train,
+    image_path,
     batch_size=batch_size,
     dim=dimension_of_the_image,
     n_channels=rgb_channels_number
 )
-
-print(partitions["train"])
 
 validation_generator = DataGenerator(
     partitions["validation"],
-    labels,
-    "../data/train_img",
+    df_train,
+    image_path,
     batch_size=batch_size,
     dim=dimension_of_the_image,
     n_channels=rgb_channels_number
 )
 
-# gen_img, gen_mask = training_generator.__getitem__(4)
+import time
+start = time.time()
+for idx in range(100):
+    gen_img, gen_mask = training_generator.__getitem__(10)
+stop = time.time()
+print("Generation time:", stop-start)
+
+
 # print(gen_img.shape, gen_mask.shape)
-# disp_image_with_map(gen_img[0],gen_mask[0])
+# disp_image_with_map(gen_img[0], gen_mask[0])
+
 
 ########################################################################################################################
 import keras.models as models
@@ -322,13 +329,13 @@ semseg_model_residual.fit_generator(generator=training_generator,
                            epochs=100, validation_data=validation_generator,
                            validation_steps=len(validation_generator), verbose=1)
 
-test_generator = DataGenerator(
-    partitions["test"],
-    labels,
-    "../data/test_img",
-    batch_size=batch_size,
-    dim=dimension_of_the_image,
-    n_channels=rgb_channels_number
-)
+# test_generator = DataGenerator(
+#     partitions["test"],
+#     df_train,
+#     "../data/test_img",
+#     batch_size=batch_size,
+#     dim=dimension_of_the_image,
+#     n_channels=rgb_channels_number
+# )
 
-semseg_model_residual.save('semseg_model.hf5')
+# semseg_model_residual.save('semseg_model.hf5')
