@@ -98,21 +98,25 @@ def disp_image_with_map2(img_matrix, mask_matrix_true, mask_matrix_pred):
     """
     Displays the image, the ground truth map and the predicted map
     """
-    plt.figure(figsize=(15,5))
+    plt.figure(figsize=(15, 5))
     plt.subplot(1, 3, 1)
     plt.imshow(img_matrix * 0.5 + 0.5)
-    plt.axis('off')
+    plt.xticks([], "")
+    plt.yticks([], "")
     plt.title("Image")
 
     plt.subplot(1, 3, 2)
     plt.imshow(mask_matrix_true[:, :, 0], cmap='Greys')
-    plt.axis('off')
+    plt.xticks([], "")
+    plt.yticks([], "")
     plt.title("Ground truth map")
 
     plt.subplot(1, 3, 3)
     plt.imshow(mask_matrix_pred[:, :, 0], cmap='Greys')
-    plt.axis('off')
+    plt.xticks([], "")
+    plt.yticks([], "")
     plt.title("Predicted map")
+
     plt.show()
 
 def plot_history(network_history):
@@ -122,6 +126,7 @@ def plot_history(network_history):
     plt.plot(network_history.history['loss'])
     plt.plot(network_history.history['val_loss'])
     plt.legend(['Training', 'Validation'])
+    plt.show()
 
 # Reference: https://stanford.edu/~shervine/blog/keras-how-to-generate-data-on-the-fly
 class DataGenerator(Sequence):

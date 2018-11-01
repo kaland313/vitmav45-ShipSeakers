@@ -151,17 +151,20 @@ def Unet(input_layer):
     kernel = 3
     filter_size = 32
     pool_size = 2
+    residual_connections = []
 
     x = Conv2D(filter_size, kernel, activation='relu', padding='same', kernel_initializer='he_normal')(input_layer)
     x = BatchNormalization()(x)
     x = Conv2D(filter_size, kernel, activation='relu', padding='same', kernel_initializer='he_normal')(x)
     x = BatchNormalization()(x)
+    residual_connections.append(x)
     x = MaxPooling2D(pool_size=(pool_size, pool_size))(x)
 
     x = Conv2D(filter_size*2, kernel, activation='relu', padding='same', kernel_initializer='he_normal')(x)
     x = BatchNormalization()(x)
     x = Conv2D(filter_size*2, kernel, activation='relu', padding='same', kernel_initializer='he_normal')(x)
     x = BatchNormalization()(x)
+    residual_connections.append(x)
     x = MaxPooling2D(pool_size=(pool_size, pool_size))(x)
 
     x = Conv2D(filter_size*4, kernel, activation='relu', padding='same', kernel_initializer='he_normal')(x)
@@ -170,12 +173,14 @@ def Unet(input_layer):
     x = BatchNormalization()(x)
 
     x = UpSampling2D(size=(pool_size, pool_size))(x)
+    x = Concatenate()([residual_connections[1], x])
     x = Conv2D(filter_size*2, kernel, activation='relu', padding='same', kernel_initializer='he_normal')(x)
     x = BatchNormalization()(x)
     x = Conv2D(filter_size*2, kernel, activation='relu', padding='same', kernel_initializer='he_normal')(x)
     x = BatchNormalization()(x)
 
     x = UpSampling2D(size=(pool_size, pool_size))(x)
+    x = Concatenate()([residual_connections[0], x])
     x = Conv2D(filter_size, kernel, activation='relu', padding='same', kernel_initializer='he_normal')(x)
     x = BatchNormalization()(x)
     x = Conv2D(filter_size, kernel, activation='relu', padding='same', kernel_initializer='he_normal')(x)
@@ -222,3 +227,4 @@ history = model.fit_generator(generator=training_generator,
                     verbose=1)
 
 plot_history(history)
+
