@@ -53,3 +53,4 @@ The structure of network is presented on the Train Test Scripts/model.png.
 ## Results 
 A network was trained for 10 epochs, during each epoch only 1600 images were shown to the network in bathces of 8. We used the adam optimizer with binary crossentropy lossfunction. 
 The network managed to learn the basic ship recognition tast, but clearly needs significant improvements. One prediction it made can be seen on the ExamplePrediction.png. 
+![Example predictions](https://github.com/kaland313/vitmav45-ShipSeakers/blob/master/ExamplePrediction.png)
