@@ -51,13 +51,13 @@ batch_size = 1
 df_train = pd.read_csv(segmentation_data_file_path)
 
 # Load the test data ids saved by the Train file
-test_img_ids = np.load("test_img_ids.npy")
+test_img_ids = np.load("../Train Test Scripts on AWS/Scripts/test_img_ids.npy")
 
 
 ########################################################################################################################
 # Load the network
 ########################################################################################################################
-model = load_model("model.hdf5")
+model = load_model("../Train Test Scripts on AWS/Scripts/model.hdf5")
 
 ########################################################################################################################
 # Test the network

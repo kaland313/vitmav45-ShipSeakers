@@ -165,9 +165,9 @@ def SegNet(input_layer):
     return x
 
 def Unet_encoder_layer(input_layer,kernel,filter_size,pool_size):
-    x = Conv2D(filter_size, kernel, padding='same')(input_layer)
-    x = Conv2D(filter_size, kernel, padding='same')(x)
-    x = Activation('relu')(x)
+    x = Conv2D(filter_size, kernel, padding='same', activation='relu')(input_layer)
+    x = BatchNormalization()(x)
+    x = Conv2D(filter_size, kernel, padding='same', activation='relu')(x)
     x = BatchNormalization()(x)
     residual_connection = x
     x = MaxPooling2D(pool_size=(pool_size, pool_size))(x)
@@ -176,11 +176,11 @@ def Unet_encoder_layer(input_layer,kernel,filter_size,pool_size):
 def Unet_decoder_layer(input_layer,kernel,filter_size,pool_size,residual_connection):
     filter_size = int(filter_size)
     x = UpSampling2D(size=(pool_size, pool_size))(input_layer)
-    x = Conv2D(filter_size, (2, 2), padding='same')(x)
     x = Concatenate()([residual_connection, x])
-    x = Conv2D(filter_size, kernel, padding='same')(x)
-    x = Conv2D(filter_size, kernel, padding='same')(x)
-    x = Activation('relu')(x)
+    x = Conv2D(filter_size, kernel, padding='same', activation='relu')(x)
+    x = BatchNormalization()(x)
+    x = Conv2D(filter_size, kernel, padding='same', activation='relu')(x)
+    x = BatchNormalization()(x)
     return x
 
 def Unet(input_layer):
@@ -196,18 +196,19 @@ def Unet(input_layer):
     x, residual_connection = Unet_encoder_layer(x, kernel, filter_size, pool_size)
     residual_connections.append(residual_connection)
 
-    filter_size *= 2
-    x, residual_connection = Unet_encoder_layer(x, kernel, filter_size, pool_size)
-    residual_connections.append(residual_connection)
+    # filter_size *= 2
+    # x, residual_connection = Unet_encoder_layer(x, kernel, filter_size, pool_size)
+    # residual_connections.append(residual_connection)
 
     filter_size *= 2
-    x = Conv2D(filter_size, kernel, padding='same')(x)
-    x = Conv2D(filter_size, kernel, padding='same')(x)
-    x = Activation('relu')(x)
+    x = Conv2D(filter_size, kernel, padding='same', activation='relu')(x)
+    x = BatchNormalization()(x)
+    x = Conv2D(filter_size, kernel, padding='same', activation='relu')(x)
+    x = BatchNormalization()(x)
 
-    filter_size /= 2
-    x = Unet_decoder_layer(x, kernel, filter_size, pool_size, residual_connections[-1])
-    residual_connections = residual_connections[:-1]
+    # filter_size /= 2
+    # x = Unet_decoder_layer(x, kernel, filter_size, pool_size, residual_connections[-1])
+    # residual_connections = residual_connections[:-1]
 
     filter_size /= 2
     x = Unet_decoder_layer(x, kernel, filter_size, pool_size, residual_connections[-1])

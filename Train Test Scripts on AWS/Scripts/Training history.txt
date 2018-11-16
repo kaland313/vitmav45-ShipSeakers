@@ -1,0 +1,148 @@
+__________________________________________________________________________________________________
+Layer (type)                    Output Shape         Param #     Connected to                     
+==================================================================================================
+input_1 (InputLayer)            (None, 768, 768, 3)  0                                            
+__________________________________________________________________________________________________
+conv2d_1 (Conv2D)               (None, 768, 768, 32) 896         input_1[0][0]                    
+__________________________________________________________________________________________________
+batch_normalization_1 (BatchNor (None, 768, 768, 32) 128         conv2d_1[0][0]                   
+__________________________________________________________________________________________________
+conv2d_2 (Conv2D)               (None, 768, 768, 32) 9248        batch_normalization_1[0][0]      
+__________________________________________________________________________________________________
+batch_normalization_2 (BatchNor (None, 768, 768, 32) 128         conv2d_2[0][0]                   
+__________________________________________________________________________________________________
+max_pooling2d_1 (MaxPooling2D)  (None, 384, 384, 32) 0           batch_normalization_2[0][0]      
+__________________________________________________________________________________________________
+conv2d_3 (Conv2D)               (None, 384, 384, 64) 18496       max_pooling2d_1[0][0]            
+__________________________________________________________________________________________________
+batch_normalization_3 (BatchNor (None, 384, 384, 64) 256         conv2d_3[0][0]                   
+__________________________________________________________________________________________________
+conv2d_4 (Conv2D)               (None, 384, 384, 64) 36928       batch_normalization_3[0][0]      
+__________________________________________________________________________________________________
+batch_normalization_4 (BatchNor (None, 384, 384, 64) 256         conv2d_4[0][0]                   
+__________________________________________________________________________________________________
+max_pooling2d_2 (MaxPooling2D)  (None, 192, 192, 64) 0           batch_normalization_4[0][0]      
+__________________________________________________________________________________________________
+conv2d_5 (Conv2D)               (None, 192, 192, 128 73856       max_pooling2d_2[0][0]            
+__________________________________________________________________________________________________
+batch_normalization_5 (BatchNor (None, 192, 192, 128 512         conv2d_5[0][0]                   
+__________________________________________________________________________________________________
+conv2d_6 (Conv2D)               (None, 192, 192, 128 147584      batch_normalization_5[0][0]      
+__________________________________________________________________________________________________
+batch_normalization_6 (BatchNor (None, 192, 192, 128 512         conv2d_6[0][0]                   
+__________________________________________________________________________________________________
+up_sampling2d_1 (UpSampling2D)  (None, 384, 384, 128 0           batch_normalization_6[0][0]      
+__________________________________________________________________________________________________
+concatenate_1 (Concatenate)     (None, 384, 384, 192 0           batch_normalization_4[0][0]      
+                                                                 up_sampling2d_1[0][0]            
+__________________________________________________________________________________________________
+conv2d_7 (Conv2D)               (None, 384, 384, 64) 110656      concatenate_1[0][0]              
+__________________________________________________________________________________________________
+batch_normalization_7 (BatchNor (None, 384, 384, 64) 256         conv2d_7[0][0]                   
+__________________________________________________________________________________________________
+conv2d_8 (Conv2D)               (None, 384, 384, 64) 36928       batch_normalization_7[0][0]      
+__________________________________________________________________________________________________
+batch_normalization_8 (BatchNor (None, 384, 384, 64) 256         conv2d_8[0][0]                   
+__________________________________________________________________________________________________
+up_sampling2d_2 (UpSampling2D)  (None, 768, 768, 64) 0           batch_normalization_8[0][0]      
+__________________________________________________________________________________________________
+concatenate_2 (Concatenate)     (None, 768, 768, 96) 0           batch_normalization_2[0][0]      
+                                                                 up_sampling2d_2[0][0]            
+__________________________________________________________________________________________________
+conv2d_9 (Conv2D)               (None, 768, 768, 32) 27680       concatenate_2[0][0]              
+__________________________________________________________________________________________________
+batch_normalization_9 (BatchNor (None, 768, 768, 32) 128         conv2d_9[0][0]                   
+__________________________________________________________________________________________________
+conv2d_10 (Conv2D)              (None, 768, 768, 32) 9248        batch_normalization_9[0][0]      
+__________________________________________________________________________________________________
+batch_normalization_10 (BatchNo (None, 768, 768, 32) 128         conv2d_10[0][0]                  
+__________________________________________________________________________________________________
+conv2d_11 (Conv2D)              (None, 768, 768, 1)  33          batch_normalization_10[0][0]     
+==================================================================================================
+Total params: 474,113
+Trainable params: 472,833
+Non-trainable params: 1,280
+__________________________________________________________________________________________________
+None
+Epoch 1/1000
+2018-11-16 10:24:34.870240: W tensorflow/core/common_runtime/bfc_allocator.cc:219] Allocator (GPU_0_bfc) ran out of memory trying to allocate 2.53GiB. The caller indicates that this is not a failure, but may mean that there could be performance gains if more memory were available.
+2018-11-16 10:24:35.417226: W tensorflow/core/common_runtime/bfc_allocator.cc:219] Allocator (GPU_0_bfc) ran out of memory trying to allocate 2.53GiB. The caller indicates that this is not a failure, but may mean that there could be performance gains if more memory were available.
+100/100 [==============================] - 166s 2s/step - loss: 0.5055 - val_loss: 0.3272
+
+Epoch 00001: val_loss improved from inf to 0.32721, saving model to model.hdf5
+Epoch 2/1000
+100/100 [==============================] - 154s 2s/step - loss: 0.1919 - val_loss: 0.1321
+
+Epoch 00002: val_loss improved from 0.32721 to 0.13211, saving model to model.hdf5
+Epoch 3/1000
+100/100 [==============================] - 155s 2s/step - loss: 0.0746 - val_loss: 0.0855
+
+Epoch 00003: val_loss improved from 0.13211 to 0.08549, saving model to model.hdf5
+Epoch 4/1000
+100/100 [==============================] - 155s 2s/step - loss: 0.0377 - val_loss: 0.0483
+
+Epoch 00004: val_loss improved from 0.08549 to 0.04829, saving model to model.hdf5
+Epoch 5/1000
+100/100 [==============================] - 154s 2s/step - loss: 0.0267 - val_loss: 0.0446
+
+Epoch 00005: val_loss improved from 0.04829 to 0.04456, saving model to model.hdf5
+Epoch 6/1000
+100/100 [==============================] - 154s 2s/step - loss: 0.0199 - val_loss: 0.0330
+
+Epoch 00006: val_loss improved from 0.04456 to 0.03296, saving model to model.hdf5
+Epoch 7/1000
+100/100 [==============================] - 155s 2s/step - loss: 0.0165 - val_loss: 0.0802
+
+Epoch 00007: val_loss did not improve from 0.03296
+Epoch 8/1000
+100/100 [==============================] - 155s 2s/step - loss: 0.0151 - val_loss: 0.0208
+
+Epoch 00008: val_loss improved from 0.03296 to 0.02078, saving model to model.hdf5
+Epoch 9/1000
+100/100 [==============================] - 154s 2s/step - loss: 0.0153 - val_loss: 0.0136
+
+Epoch 00009: val_loss improved from 0.02078 to 0.01362, saving model to model.hdf5
+Epoch 10/1000
+100/100 [==============================] - 155s 2s/step - loss: 0.0128 - val_loss: 0.0319
+
+Epoch 00010: val_loss did not improve from 0.01362
+Epoch 11/1000
+100/100 [==============================] - 155s 2s/step - loss: 0.0126 - val_loss: 0.0244
+
+Epoch 00011: val_loss did not improve from 0.01362
+Epoch 12/1000
+100/100 [==============================] - 154s 2s/step - loss: 0.0115 - val_loss: 0.0142
+
+Epoch 00012: val_loss did not improve from 0.01362
+Epoch 13/1000
+100/100 [==============================] - 154s 2s/step - loss: 0.0106 - val_loss: 0.0262
+
+Epoch 00013: val_loss did not improve from 0.01362
+Epoch 14/1000
+100/100 [==============================] - 154s 2s/step - loss: 0.0113 - val_loss: 0.0123
+
+Epoch 00014: val_loss improved from 0.01362 to 0.01231, saving model to model.hdf5
+Epoch 15/1000
+100/100 [==============================] - 154s 2s/step - loss: 0.0114 - val_loss: 0.0327
+
+Epoch 00015: val_loss did not improve from 0.01231
+Epoch 16/1000
+100/100 [==============================] - 155s 2s/step - loss: 0.0088 - val_loss: 0.0725
+
+Epoch 00016: val_loss did not improve from 0.01231
+Epoch 17/1000
+100/100 [==============================] - 154s 2s/step - loss: 0.0081 - val_loss: 0.0154
+
+Epoch 00017: val_loss did not improve from 0.01231
+Epoch 18/1000
+100/100 [==============================] - 155s 2s/step - loss: 0.0112 - val_loss: 0.0421
+
+Epoch 00018: val_loss did not improve from 0.01231
+Epoch 19/1000
+100/100 [==============================] - 154s 2s/step - loss: 0.0091 - val_loss: 0.0303
+
+Epoch 00019: val_loss did not improve from 0.01231
+Epoch 20/1000
+100/100 [==============================] - 155s 2s/step - loss: 0.0080 - val_loss: 0.0139
+
+Epoch 00020: val_loss did not improve from 0.01231
