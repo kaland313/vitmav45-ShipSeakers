@@ -3,11 +3,8 @@
 ########################################################################################################################
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-import matplotlib.pylab as pl
-from matplotlib.colors import ListedColormap
 from tqdm import tqdm
-import imageio
+# import imageio
 import cv2
 
 from keras.applications import imagenet_utils
@@ -25,12 +22,6 @@ from keras.layers import Concatenate
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 from keras.optimizers import SGD
 
-# import json
-# import tensorflow as tf
-# from keras.backend.tensorflow_backend import set_session
-# from tensorflow.python.client import device_lib
-
-
 ########################################################################################################################
 # Import Function definitions
 ########################################################################################################################
@@ -39,28 +30,32 @@ from ShipSegFunctions import*
 ########################################################################################################################
 # GPU info
 ########################################################################################################################
-# config = tf.ConfigProto()
-# config.gpu_options.allow_growth = True
-# set_session(tf.Session(config=config))
+# import json
+import tensorflow as tf
+from keras.backend.tensorflow_backend import set_session
+from tensorflow.python.client import device_lib
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+set_session(tf.Session(config=config))
 # Device check
-# print(device_lib.list_local_devices())
+print(device_lib.list_local_devices())
 
-print(K.tensorflow_backend._get_available_gpus())
+# print(K.tensorflow_backend._get_available_gpus())
 
 ########################################################################################################################
 # PARAMETERS
 ########################################################################################################################
-image_path = "/run/media/kalap/Storage/Deep learning 2/train_v2"
-segmentation_data_file_path = '/run/media/kalap/Storage/Deep learning 2/train_ship_segmentations_v2.csv'
+image_path = "/data/train_v2"
+segmentation_data_file_path = '/data/train_ship_segmentations_v2.csv' # '/run/media/kalap/Storage/Deep learning 2/train_ship_segmentations_v2.csv'
 # image_path = "../data/train_img"
 # segmentation_data_file_path = '../data/train_ship_segmentations_v2.csv'
 valid_split = 0.15
 test_split = 0.15
 
-# resize_img_to = (768, 768)
+resize_img_to = (768, 768)
 # resize_img_to = (384, 384)
-resize_img_to = (192, 192)
-batch_size = 8
+# resize_img_to = (192, 192)
+batch_size = 4
 
 ########################################################################################################################
 # Load and prepare the data
@@ -80,7 +75,8 @@ df_train = pd.read_csv(segmentation_data_file_path)
 # df_train = df_train.reset_index(drop=True)
 
 # Split the data
-train_img_ids, valid_img_ids, test_img_ids = separate(df_train.index.values, valid_split, test_split)
+train_img_ids, valid_img_ids, test_img_ids = separate(df_train['ImageId'].values, valid_split, test_split)
+np.save("test_img_ids.npy", test_img_ids)
 
 # Define the generators
 rgb_channels_number = 3
@@ -102,13 +98,16 @@ validation_generator = DataGenerator(
     image_path,
     batch_size=batch_size,
     dim=dimension_of_the_image,
-    n_channels=rgb_channels_number
+    n_channels=rgb_channels_number,
+    forced_len = 25
 )
 
-# Test the generators
+# # Test the generators
 # gen_img, gen_mask = training_generator.__getitem__(10)
 # print(gen_img.shape, gen_mask.shape)
 # disp_image_with_map(gen_img[0], gen_mask[0])
+
+
 
 #178573
 # print(df_train.at[178573, 'ImageId'],df_train.at[178573, 'EncodedPixels'])
@@ -119,7 +118,7 @@ validation_generator = DataGenerator(
 
 def SegNet(input_layer):
     kernel = 3
-    filter_size = 32
+    filter_size = 64
     pool_size = 2
     residual_connections = []
 
@@ -129,22 +128,59 @@ def SegNet(input_layer):
     x = MaxPooling2D(pool_size=(pool_size, pool_size))(x)
     residual_connections.append(x)
 
-    x = Conv2D(64, kernel, padding='same')(x)
+    x = Conv2D(128, kernel, padding='same')(x)
+    x = BatchNormalization()(x)
+    x = Activation('relu')(x)
+    x = MaxPooling2D(pool_size=(pool_size, pool_size))(x)
+    residual_connections.append(x)
+
+    x = Conv2D(256, kernel, padding='same')(x)
+    x = BatchNormalization()(x)
+    x = Activation('relu')(x)
+    x = MaxPooling2D(pool_size=(pool_size, pool_size))(x)
+    residual_connections.append(x)
+
+    x = Conv2D(512, kernel, padding='same')(x)
     x = BatchNormalization()(x)
     x = Activation('relu')(x)
 
-    kernel = 3
-    filter_size = 32
-    pool_size = 2
+    x = Conv2D(512, kernel, padding='same')(x)
+    x = BatchNormalization()(x)
+    x = Concatenate()([x, residual_connections[2]])
 
-    x = Conv2D(64, kernel, padding='same')(x)
+    x = UpSampling2D(size=(pool_size,pool_size))(x)
+    x = Conv2D(256, kernel, padding='same')(x)
+    x = BatchNormalization()(x)
+    x = Concatenate()([x, residual_connections[1]])
+
+    x = UpSampling2D(size=(pool_size,pool_size))(x)
+    x = Conv2D(128, kernel, padding='same')(x)
     x = BatchNormalization()(x)
     x = Concatenate()([x, residual_connections[0]])
 
-    x = UpSampling2D(size=(pool_size, pool_size))(x)
+    x = UpSampling2D(size=(pool_size,pool_size))(x)
     x = Conv2D(filter_size, kernel, padding='same')(x)
     x = BatchNormalization()(x)
 
+    return x
+
+def Unet_encoder_layer(input_layer,kernel,filter_size,pool_size):
+    x = Conv2D(filter_size, kernel, padding='same')(input_layer)
+    x = Conv2D(filter_size, kernel, padding='same')(x)
+    x = Activation('relu')(x)
+    x = BatchNormalization()(x)
+    residual_connection = x
+    x = MaxPooling2D(pool_size=(pool_size, pool_size))(x)
+    return x, residual_connection
+
+def Unet_decoder_layer(input_layer,kernel,filter_size,pool_size,residual_connection):
+    filter_size = int(filter_size)
+    x = UpSampling2D(size=(pool_size, pool_size))(input_layer)
+    x = Conv2D(filter_size, (2, 2), padding='same')(x)
+    x = Concatenate()([residual_connection, x])
+    x = Conv2D(filter_size, kernel, padding='same')(x)
+    x = Conv2D(filter_size, kernel, padding='same')(x)
+    x = Activation('relu')(x)
     return x
 
 def Unet(input_layer):
@@ -153,40 +189,35 @@ def Unet(input_layer):
     pool_size = 2
     residual_connections = []
 
-    x = Conv2D(filter_size, kernel, activation='relu', padding='same', kernel_initializer='he_normal')(input_layer)
-    x = BatchNormalization()(x)
-    x = Conv2D(filter_size, kernel, activation='relu', padding='same', kernel_initializer='he_normal')(x)
-    x = BatchNormalization()(x)
-    residual_connections.append(x)
-    x = MaxPooling2D(pool_size=(pool_size, pool_size))(x)
+    x, residual_connection = Unet_encoder_layer(input_layer, kernel, filter_size, pool_size)
+    residual_connections.append(residual_connection)
 
-    x = Conv2D(filter_size*2, kernel, activation='relu', padding='same', kernel_initializer='he_normal')(x)
-    x = BatchNormalization()(x)
-    x = Conv2D(filter_size*2, kernel, activation='relu', padding='same', kernel_initializer='he_normal')(x)
-    x = BatchNormalization()(x)
-    residual_connections.append(x)
-    x = MaxPooling2D(pool_size=(pool_size, pool_size))(x)
+    filter_size *= 2
+    x, residual_connection = Unet_encoder_layer(x, kernel, filter_size, pool_size)
+    residual_connections.append(residual_connection)
 
-    x = Conv2D(filter_size*4, kernel, activation='relu', padding='same', kernel_initializer='he_normal')(x)
-    x = BatchNormalization()(x)
-    x = Conv2D(filter_size*4, kernel, activation='relu', padding='same', kernel_initializer='he_normal')(x)
-    x = BatchNormalization()(x)
+    filter_size *= 2
+    x, residual_connection = Unet_encoder_layer(x, kernel, filter_size, pool_size)
+    residual_connections.append(residual_connection)
 
-    x = UpSampling2D(size=(pool_size, pool_size))(x)
-    x = Concatenate()([residual_connections[1], x])
-    x = Conv2D(filter_size*2, kernel, activation='relu', padding='same', kernel_initializer='he_normal')(x)
-    x = BatchNormalization()(x)
-    x = Conv2D(filter_size*2, kernel, activation='relu', padding='same', kernel_initializer='he_normal')(x)
-    x = BatchNormalization()(x)
+    filter_size *= 2
+    x = Conv2D(filter_size, kernel, padding='same')(x)
+    x = Conv2D(filter_size, kernel, padding='same')(x)
+    x = Activation('relu')(x)
 
-    x = UpSampling2D(size=(pool_size, pool_size))(x)
-    x = Concatenate()([residual_connections[0], x])
-    x = Conv2D(filter_size, kernel, activation='relu', padding='same', kernel_initializer='he_normal')(x)
-    x = BatchNormalization()(x)
-    x = Conv2D(filter_size, kernel, activation='relu', padding='same', kernel_initializer='he_normal')(x)
-    x = BatchNormalization()(x)
+    filter_size /= 2
+    x = Unet_decoder_layer(x, kernel, filter_size, pool_size, residual_connections[-1])
+    residual_connections = residual_connections[:-1]
+
+    filter_size /= 2
+    x = Unet_decoder_layer(x, kernel, filter_size, pool_size, residual_connections[-1])
+    residual_connections = residual_connections[:-1]
+
+    filter_size /= 2
+    x = Unet_decoder_layer(x, kernel, filter_size, pool_size, residual_connections[-1])
 
     return x
+
 
 ########################################################################################################################
 classes = 1
@@ -211,20 +242,20 @@ plot_model(model, to_file='model.png', show_shapes=True)
 patience=40
 early_stopping=EarlyStopping(patience=patience, verbose=1)
 checkpointer=ModelCheckpoint(filepath='model.hdf5', save_best_only=True, verbose=1)
-# history = model.fit_generator(generator=training_generator,
-#                     steps_per_epoch=len(training_generator),
-#                     epochs=1000,
-#                     validation_data=validation_generator,
-#                     validation_steps=len(validation_generator),
-#                     callbacks=[checkpointer, early_stopping],
-#                     verbose=1)
+
 history = model.fit_generator(generator=training_generator,
-                    steps_per_epoch=200,
-                    epochs=10,
-                    validation_data=validation_generator,
-                    validation_steps=200,
-                    callbacks=[checkpointer, early_stopping],
-                    verbose=1)
+                     steps_per_epoch=100,
+                     epochs=1000,
+                     validation_data=validation_generator,
+                     validation_steps = len(validation_generator),
+                     callbacks=[checkpointer, early_stopping],
+                     verbose=1)
 
-plot_history(history)
-
+#history = model.fit_generator(generator=training_generator,
+#                   steps_per_epoch=200,
+#                    epochs=10,
+#                    validation_data=validation_generator,
+#                    validation_steps=200,
+#                    callbacks=[checkpointer, early_stopping],
+#                    verbose=1)
+np.save("training_history.npy", history)

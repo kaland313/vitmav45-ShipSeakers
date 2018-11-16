@@ -24,7 +24,15 @@ from ShipSegFunctions import *
 ########################################################################################################################
 # GPU info
 ########################################################################################################################
-print(K.tensorflow_backend._get_available_gpus())
+import tensorflow as tf
+from keras.backend.tensorflow_backend import set_session
+from tensorflow.python.client import device_lib
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+set_session(tf.Session(config=config))
+# Device check
+print(device_lib.list_local_devices())
+# print(K.tensorflow_backend._get_available_gpus())
 
 ########################################################################################################################
 # PARAMETERS
@@ -32,8 +40,8 @@ print(K.tensorflow_backend._get_available_gpus())
 image_path = "/run/media/kalap/Storage/Deep learning 2/train_v2"
 segmentation_data_file_path = '/run/media/kalap/Storage/Deep learning 2/train_ship_segmentations_v2.csv'
 
-resize_img_to = (192, 192)
-batch_size = 8
+resize_img_to = (768, 768)
+batch_size = 1
 
 ########################################################################################################################
 # Load and prepare the data
@@ -73,9 +81,8 @@ test_generator = DataGenerator(
 # predictions = model.predict_generator(test_generator,
 #                                       steps=1, verbose =1)
 
-test_images, test_mask_true = test_generator.__getitem__(10)
 
-predictions = model.predict(test_images,
-                            verbose=1)
 for i in range(5):
-    disp_image_with_map2(test_images[i], test_mask_true[i], predictions[i])
+    test_images, test_mask_true = test_generator.__getitem__(i)
+    predictions = model.predict(test_images, verbose=1)
+    disp_image_with_map2(test_images[0], test_mask_true[0], predictions[0])

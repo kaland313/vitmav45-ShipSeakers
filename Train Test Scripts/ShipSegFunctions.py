@@ -3,21 +3,11 @@
 ########################################################################################################################
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-import matplotlib.pylab as pl
-from matplotlib.colors import ListedColormap
 import imageio
 import cv2
 
 from keras.applications import imagenet_utils
 from keras.utils import Sequence
-
-
-
-cmap = pl.cm.viridis
-my_cmap = cmap(np.arange(cmap.N))
-my_cmap[:,-1] = np.linspace(0, 1, cmap.N)
-my_cmap = ListedColormap(my_cmap)
 
 def preprocess_input(x):
     """Preprocesses a Numpy array encoding a batch of images.
@@ -83,66 +73,21 @@ def rle_decode(mask_rle, shape=(768, 768)):
 
     return mask.reshape(shape).T  # Needed to align to RLE direction
 
-def disp_image_with_map(img_matrix, mask_matrix):
-    """
-    Displays the image image with the mask layed on top of it. Yellow highlight indicates the ships.
-    my_cmap is a color map which is transparent at one end it.
-    """
-    plt.imshow(img_matrix*0.5+0.5)
-    plt.imshow(mask_matrix[:, :, 0], alpha=0.5, cmap=my_cmap)
-    plt.axis('off')
-    plt.show()
-
-
-def disp_image_with_map2(img_matrix, mask_matrix_true, mask_matrix_pred):
-    """
-    Displays the image, the ground truth map and the predicted map
-    """
-    plt.figure(figsize=(15, 5))
-    plt.subplot(1, 3, 1)
-    plt.imshow(img_matrix * 0.5 + 0.5)
-    plt.xticks([], "")
-    plt.yticks([], "")
-    plt.title("Image")
-
-    plt.subplot(1, 3, 2)
-    plt.imshow(mask_matrix_true[:, :, 0], cmap='Greys')
-    plt.xticks([], "")
-    plt.yticks([], "")
-    plt.title("Ground truth map")
-
-    plt.subplot(1, 3, 3)
-    plt.imshow(mask_matrix_pred[:, :, 0], cmap='Greys')
-    plt.xticks([], "")
-    plt.yticks([], "")
-    plt.title("Predicted map")
-
-    plt.show()
-
-def plot_history(network_history):
-    plt.figure()
-    plt.xlabel('Epochs')
-    plt.ylabel('Loss')
-    plt.plot(network_history.history['loss'])
-    plt.plot(network_history.history['val_loss'])
-    plt.legend(['Training', 'Validation'])
-    plt.show()
-
 # Reference: https://stanford.edu/~shervine/blog/keras-how-to-generate-data-on-the-fly
 class DataGenerator(Sequence):
 
     def __init__(self, list_IDs, ship_seg_df, img_path_prefix, batch_size=32, dim=(32, 32, 32),
-                 n_channels=1, n_classes=10, shuffle=True):
+                 n_channels=1, n_classes=10, shuffle=True, forced_len=0):
         # Initialization
         self.dim = dim  # dataset's dimension
         self.img_prefix = img_path_prefix  # location of the dataset
         self.batch_size = batch_size  # number of data/epoch
         self.ship_seg_df = ship_seg_df.copy()  # a dataframe storing the filenames and ship masks
-        self.list_IDs = list_IDs  # indexes for the given subset referring to the rows of ship_seg_df
+        self.list_IDs = list_IDs  # a list containing image names to be used by the generator
         self.n_channels = n_channels  # number of rgb chanels
         # self.n_classes = n_classes                 # ???
         self.shuffle = shuffle  # shuffle the data
-
+        self.forced_len = forced_len
         self.on_epoch_end()
 
     def on_epoch_end(self):
@@ -154,7 +99,10 @@ class DataGenerator(Sequence):
 
     def __len__(self):
         # Denotes the number of batches per epoch'
-        return int(np.floor(len(self.list_IDs) / self.batch_size))
+        if self.forced_len == 0:
+            return int(np.floor(len(self.list_IDs) / self.batch_size))
+        else:
+            return self.forced_len
 
     def __getitem__(self, index):
         # Generate one batch of data'
@@ -185,12 +133,16 @@ class DataGenerator(Sequence):
         # Generate data
         for i, ID in enumerate(tmp_list):
             # read image and mask referred by "ID"
-            mask = rle_decode(self.ship_seg_df.at[ID, 'EncodedPixels'])
+            mask_list = self.ship_seg_df['EncodedPixels'][self.ship_seg_df['ImageId'] == ID].tolist()
+            mask = np.zeros((768, 768))
+            for mask_coded in mask_list:
+                mask += rle_decode(mask_coded)
+
             if self.dim == (768, 768):
-                X[i] = read_transform_image(self.img_prefix + "/" + self.ship_seg_df.at[ID, 'ImageId'])
+                X[i] = read_transform_image(self.img_prefix + "/" + ID)
                 Y[i] = np.atleast_3d(mask)
             else:
-                X[i] = cv2.resize(read_transform_image(self.img_prefix + "/" + self.ship_seg_df.at[ID, 'ImageId']), self.dim)
+                X[i] = cv2.resize(read_transform_image(self.img_prefix + "/" + ID), self.dim)
                 Y[i] = np.atleast_3d(cv2.resize(mask, self.dim, interpolation=cv2.INTER_NEAREST))
 
         return X, Y
