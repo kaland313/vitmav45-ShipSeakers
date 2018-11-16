@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import imageio
 import cv2
+import matplotlib.pyplot as plt
 
 from keras.applications import imagenet_utils
 from keras.utils import Sequence
@@ -72,6 +73,52 @@ def rle_decode(mask_rle, shape=(768, 768)):
             mask[lo:hi] = 1
 
     return mask.reshape(shape).T  # Needed to align to RLE direction
+
+
+def disp_image_with_map(img_matrix, mask_matrix):
+    """
+    Displays the image image with the mask layed on top of it. Yellow highlight indicates the ships.
+    my_cmap is a color map which is transparent at one end it.
+    """
+    plt.imshow(img_matrix*0.5+0.5)
+    plt.imshow(mask_matrix[:, :, 0], alpha=0.5, cmap=my_cmap)
+    plt.axis('off')
+    plt.show()
+
+
+def disp_image_with_map2(img_matrix, mask_matrix_true, mask_matrix_pred):
+    """
+    Displays the image, the ground truth map and the predicted map
+    """
+    plt.figure(figsize=(15, 5))
+    plt.subplot(1, 3, 1)
+    plt.imshow(img_matrix * 0.5 + 0.5)
+    plt.xticks([], "")
+    plt.yticks([], "")
+    plt.title("Image")
+
+    plt.subplot(1, 3, 2)
+    plt.imshow(mask_matrix_true[:, :, 0], cmap='Greys')
+    plt.xticks([], "")
+    plt.yticks([], "")
+    plt.title("Ground truth map")
+
+    plt.subplot(1, 3, 3)
+    plt.imshow(mask_matrix_pred[:, :, 0], cmap='Greys', vmin=0, vmax=0.1)
+    plt.xticks([], "")
+    plt.yticks([], "")
+    plt.title("Predicted map")
+
+    plt.show()
+
+def plot_history(network_history):
+    plt.figure()
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.plot(network_history.history['loss'])
+    plt.plot(network_history.history['val_loss'])
+    plt.legend(['Training', 'Validation'])
+    plt.show()
 
 # Reference: https://stanford.edu/~shervine/blog/keras-how-to-generate-data-on-the-fly
 class DataGenerator(Sequence):
