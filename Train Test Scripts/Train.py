@@ -14,13 +14,14 @@ from keras.utils import plot_model
 
 import keras.models as models
 from keras.models import Model
+from keras.models import load_model
 from keras.layers import Input
 from keras.layers.core import Dense, Dropout, Activation, Flatten, Reshape, Permute
 from keras.layers.convolutional import Conv2D, MaxPooling2D, UpSampling2D, ZeroPadding2D
 from keras.layers.normalization import BatchNormalization
 from keras.layers import Concatenate
-from keras.callbacks import EarlyStopping, ModelCheckpoint
-from keras.optimizers import SGD
+from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau, LambdaCallback
+from keras.optimizers import SGD, Adam
 
 ########################################################################################################################
 # Import Function definitions
@@ -45,16 +46,15 @@ print(device_lib.list_local_devices())
 ########################################################################################################################
 # PARAMETERS
 ########################################################################################################################
-image_path = "/data/train_v2"
-segmentation_data_file_path = '/data/train_ship_segmentations_v2.csv' # '/run/media/kalap/Storage/Deep learning 2/train_ship_segmentations_v2.csv'
-# image_path = "../data/train_img"
-# segmentation_data_file_path = '../data/train_ship_segmentations_v2.csv'
+image_path = "/run/media/kalap/Storage/Deep learning 2/train_v2"
+segmentation_data_file_path = '/run/media/kalap/Storage/Deep learning 2/train_ship_segmentations_v2.csv'
+
 valid_split = 0.15
 test_split = 0.15
 
-resize_img_to = (768, 768)
+#resize_img_to = (768, 768)
 # resize_img_to = (384, 384)
-# resize_img_to = (192, 192)
+resize_img_to = (192, 192)
 batch_size = 4
 
 ########################################################################################################################
@@ -108,14 +108,12 @@ validation_generator = DataGenerator(
 # disp_image_with_map(gen_img[0], gen_mask[0])
 
 
-
 #178573
 # print(df_train.at[178573, 'ImageId'],df_train.at[178573, 'EncodedPixels'])
 
 ########################################################################################################################
-# Build the network
+# Model definition
 ########################################################################################################################
-
 def SegNet(input_layer):
     kernel = 3
     filter_size = 64
@@ -162,7 +160,10 @@ def SegNet(input_layer):
     x = Conv2D(filter_size, kernel, padding='same')(x)
     x = BatchNormalization()(x)
 
-    return x
+    final_layer = Conv2D(1, 1, padding='same', activation='sigmoid')(x)
+
+    return final_layer
+
 
 def Unet_encoder_layer(input_layer,kernel,filter_size,pool_size):
     x = Conv2D(filter_size, kernel, padding='same', activation='relu')(input_layer)
@@ -173,6 +174,7 @@ def Unet_encoder_layer(input_layer,kernel,filter_size,pool_size):
     x = MaxPooling2D(pool_size=(pool_size, pool_size))(x)
     return x, residual_connection
 
+
 def Unet_decoder_layer(input_layer,kernel,filter_size,pool_size,residual_connection):
     filter_size = int(filter_size)
     x = UpSampling2D(size=(pool_size, pool_size))(input_layer)
@@ -182,6 +184,7 @@ def Unet_decoder_layer(input_layer,kernel,filter_size,pool_size,residual_connect
     x = Conv2D(filter_size, kernel, padding='same', activation='relu')(x)
     x = BatchNormalization()(x)
     return x
+
 
 def Unet(input_layer):
     kernel = 3
@@ -217,40 +220,56 @@ def Unet(input_layer):
     filter_size /= 2
     x = Unet_decoder_layer(x, kernel, filter_size, pool_size, residual_connections[-1])
 
-    return x
+    final_layer = Conv2D(1, 1, padding='same', activation='sigmoid')(x)
+
+    return final_layer
+
+
+
 
 
 ########################################################################################################################
-classes = 1
-
+# Build the model
+########################################################################################################################
 input_layer = Input((*dimension_of_the_image, 3))
+output_layer = Unet(input_layer)
 
-decoded_layer = Unet(input_layer)
+model = load_model("model.hdf5", custom_objects={'dice_coef_loss': dice_coef_loss})
+# model = Model(inputs=input_layer, outputs=output_layer)
 
-final_layer = Conv2D(classes, 1, padding='same', activation='sigmoid')(decoded_layer)
-
-model = Model(inputs=input_layer, outputs=final_layer)
-
-opt = SGD(lr=1e-3, decay=1e-6, momentum=0.9, nesterov=True)
-model.compile(optimizer='adam', loss='binary_crossentropy')
+# opt = SGD(lr=1e-3, decay=1e-6, momentum=0.9, nesterov=True)
+# opt = Adam(lr=1e-3, decay=1e-6)
+model.compile(optimizer='adam', loss=dice_coef_loss)
 print(model.summary())
 
-plot_model(model, to_file='model.png', show_shapes=True)
+f = open('Training history.txt', 'a')
+# f = open('Training history.txt', 'w')
+# f.write(str(device_lib.list_local_devices()))
+# f.write("\n\n")
+# model.summary(print_fn=lambda x: f.write(x + '\n'))
+# f.write("\n\n")
+
+# plot_model(model, to_file='model.png', show_shapes=True)
 
 ########################################################################################################################
 # Train the network
 ########################################################################################################################
-patience=40
-early_stopping=EarlyStopping(patience=patience, verbose=1)
-checkpointer=ModelCheckpoint(filepath='model.hdf5', save_best_only=True, verbose=1)
+early_stopping = EarlyStopping(patience=12, verbose=1)
+checkpoint = ModelCheckpoint(filepath='model.hdf5', save_best_only=True, verbose=1)
+reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=5, min_lr=1e-5, verbose=1)
+logger = LambdaCallback(on_epoch_end=lambda epoch, logs: f.write('epoch: ' + str(epoch) +
+                                                                 '\tloss: ' + str(logs['loss']) +
+                                                                 '\tval_loss: ' + str(logs['val_loss']) +
+                                                                 '\tlr: '+ str(logs['lr']) + '\n'),
+                        on_train_end=lambda logs: f.close())
 
 history = model.fit_generator(generator=training_generator,
-                     steps_per_epoch=100,
-                     epochs=1000,
-                     validation_data=validation_generator,
-                     validation_steps = len(validation_generator),
-                     callbacks=[checkpointer, early_stopping],
-                     verbose=1)
+                              steps_per_epoch=100,
+                              epochs=1000,
+                              validation_data=validation_generator,
+                              validation_steps=len(validation_generator),
+                              callbacks=[checkpoint, early_stopping, reduce_lr, logger],
+                              verbose=1)
 
 #history = model.fit_generator(generator=training_generator,
 #                   steps_per_epoch=200,

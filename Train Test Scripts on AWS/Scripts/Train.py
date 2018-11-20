@@ -13,6 +13,7 @@ from keras import backend as K
 from keras.utils import plot_model
 
 import keras.models as models
+from keras.models import load_model
 from keras.models import Model
 from keras.layers import Input
 from keras.layers.core import Dense, Dropout, Activation, Flatten, Reshape, Permute
@@ -227,25 +228,52 @@ def Unet(input_layer):
 
 
 ########################################################################################################################
+# Define custom losses
+########################################################################################################################
+def dice_coef(y_true, y_pred):
+    y_true_f = K.flatten(y_true)
+    y_pred_f = K.flatten(y_pred)
+    intersection = K.sum(y_true_f * y_pred_f)
+    return (2.0 * intersection + 1.0) / (K.sum(y_true_f) + K.sum(y_pred_f) + 1.0)
+
+
+def jacard_coef(y_true, y_pred):
+    y_true_f = K.flatten(y_true)
+    y_pred_f = K.flatten(y_pred)
+    intersection = K.sum(y_true_f * y_pred_f)
+    return (intersection + 1.0) / (K.sum(y_true_f) + K.sum(y_pred_f) - intersection + 1.0)
+
+
+def jacard_coef_loss(y_true, y_pred):
+    return -jacard_coef(y_true, y_pred)
+
+
+def dice_coef_loss(y_true, y_pred):
+    return -dice_coef(y_true, y_pred)
+
+
+########################################################################################################################
 # Build the model
 ########################################################################################################################
 
 input_layer = Input((*dimension_of_the_image, 3))
 output_layer = Unet(input_layer)
-model = Model(inputs=input_layer, outputs=output_layer)
+# model = Model(inputs=input_layer, outputs=output_layer)
+model = load_model("model.hdf5", custom_objects={'dice_coef_loss': dice_coef_loss})
 
 # opt = SGD(lr=1e-3, decay=1e-6, momentum=0.9, nesterov=True)
-opt = Adam(lr=1e-3, decay=1e-6)
-model.compile(optimizer=opt, loss='binary_crossentropy')
+# opt = Adam(lr=1e-3, decay=1e-6)
+model.compile(optimizer='adam', loss=dice_coef_loss)
 print(model.summary())
 
-f = open('Training history.txt', 'w')
-f.write(str(device_lib.list_local_devices()))
-f.write("\n\n")
-model.summary(print_fn=lambda x: f.write(x + '\n'))
-f.write("\n\n")
+f = open('Training history.txt', 'a')
+# f = open('Training history.txt', 'w')
+# f.write(str(device_lib.list_local_devices()))
+# f.write("\n\n")
+# model.summary(print_fn=lambda x: f.write(x + '\n'))
+# f.write("\n\n")
 
-plot_model(model, to_file='model.png', show_shapes=True)
+# plot_model(model, to_file='model.png', show_shapes=True)
 
 ########################################################################################################################
 # Train the network
@@ -253,7 +281,10 @@ plot_model(model, to_file='model.png', show_shapes=True)
 early_stopping = EarlyStopping(patience=12, verbose=1)
 checkpoint = ModelCheckpoint(filepath='model.hdf5', save_best_only=True, verbose=1)
 reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=4, min_lr=1e-6)
-logger = LambdaCallback(on_epoch_end=lambda epoch, logs: f.write('epoch: ' + str(epoch) + '\tloss: ' + str(logs['loss']) + '\tval_loss: ' + str(logs['val_loss']) + '\n'),
+logger = LambdaCallback(on_epoch_end=lambda epoch, logs: f.write('epoch: ' + str(epoch) +
+                                                                 '\tloss: ' + str(logs['loss']) +
+                                                                 '\tval_loss: ' + str(logs['val_loss']) +
+                                                                 '\tlr: '+ str(logs['lr']) + '\n'),
                         on_train_end=lambda logs: f.close())
 
 history = model.fit_generator(generator=training_generator,
@@ -263,6 +294,7 @@ history = model.fit_generator(generator=training_generator,
                               validation_steps=len(validation_generator),
                               callbacks=[checkpoint, early_stopping, reduce_lr, logger],
                               verbose=1)
+
 #history = model.fit_generator(generator=training_generator,
 #                   steps_per_epoch=200,
 #                    epochs=10,

@@ -3,20 +3,20 @@ device_type: "CPU"
 memory_limit: 268435456
 locality {
 }
-incarnation: 12233880830783111372
+incarnation: 10897107581439019885
 , name: "/device:XLA_GPU:0"
 device_type: "XLA_GPU"
 memory_limit: 17179869184
 locality {
 }
-incarnation: 15424021723293493490
+incarnation: 10790165402407741149
 physical_device_desc: "device: XLA_GPU device"
 , name: "/device:XLA_CPU:0"
 device_type: "XLA_CPU"
 memory_limit: 17179869184
 locality {
 }
-incarnation: 13660381885664538751
+incarnation: 15164036773811681054
 physical_device_desc: "device: XLA_CPU device"
 , name: "/device:GPU:0"
 device_type: "GPU"
@@ -26,9 +26,10 @@ locality {
   links {
   }
 }
-incarnation: 11283336892123951957
+incarnation: 17220388481981340874
 physical_device_desc: "device: 0, name: Tesla K80, pci bus id: 0000:00:1e.0, compute capability: 3.7"
 ]
+
 __________________________________________________________________________________________________
 Layer (type)                    Output Shape         Param #     Connected to                     
 ==================================================================================================
@@ -94,78 +95,126 @@ Total params: 474,113
 Trainable params: 472,833
 Non-trainable params: 1,280
 __________________________________________________________________________________________________
-None
-Epoch 1/1000
-2018-11-16 22:58:50.544100: W tensorflow/core/common_runtime/bfc_allocator.cc:219] Allocator (GPU_0_bfc) ran out of memory trying to allocate 2.53GiB. The caller indicates that this is not a failure, but may mean that there could be performance gains if more memory were available.
-2018-11-16 22:58:51.075606: W tensorflow/core/common_runtime/bfc_allocator.cc:219] Allocator (GPU_0_bfc) ran out of memory trying to allocate 2.53GiB. The caller indicates that this is not a failure, but may mean that there could be performance gains if more memory were available.
-100/100 [==============================] - 164s 2s/step - loss: 0.5179 - val_loss: 0.3650
 
-Epoch 00001: val_loss improved from inf to 0.36503, saving model to model.hdf5
-Epoch 2/1000
-100/100 [==============================] - 151s 2s/step - loss: 0.2034 - val_loss: 0.1344
 
-Epoch 00002: val_loss improved from 0.36503 to 0.13443, saving model to model.hdf5
-Epoch 3/1000
-100/100 [==============================] - 152s 2s/step - loss: 0.0757 - val_loss: 0.1152
+epoch: 0	loss: -0.00872660059553	val_loss: -0.0100423634499	lr: 0.001
+epoch: 1	loss: -0.0222105591518	val_loss: -0.024309879824	lr: 0.001
+epoch: 2	loss: -0.0296893515474	val_loss: -0.00971411163786	lr: 0.001
+epoch: 3	loss: -0.0718629016811	val_loss: -0.00727117244941	lr: 0.001
+epoch: 4	loss: -0.1104439563	val_loss: -0.0100885804201	lr: 0.001
+epoch: 5	loss: -0.207846851734	val_loss: -0.0235312894644	lr: 0.001
+epoch: 6	loss: -0.161106625985	val_loss: -0.0312084045494	lr: 0.0005
+epoch: 7	loss: -0.246437461673	val_loss: -0.10746255694	lr: 0.0005
+epoch: 8	loss: -0.213948607873	val_loss: -0.189804373966	lr: 0.0005
+epoch: 9	loss: -0.224346215029	val_loss: -0.137725924939	lr: 0.0005
+epoch: 10	loss: -0.218412069156	val_loss: -0.148297697172	lr: 0.0005
+epoch: 11	loss: -0.229625485396	val_loss: -0.074264018207	lr: 0.0005
+epoch: 12	loss: -0.273656064791	val_loss: -0.159850245592	lr: 0.0005
+epoch: 13	loss: -0.28047241253	val_loss: -0.0829326540537	lr: 0.00025
+epoch: 14	loss: -0.236283141948	val_loss: -0.293989740867	lr: 0.00025
+epoch: 15	loss: -0.305164702638	val_loss: -0.141341466946	lr: 0.00025
+epoch: 16	loss: -0.230715580728	val_loss: -0.200090208845	lr: 0.00025
+epoch: 0	loss: -0.217928768621	val_loss: -0.140375543192	lr: 0.001
+epoch: 1	loss: -0.20911658855	val_loss: -0.264255430849	lr: 0.001
+epoch: 2	loss: -0.266962610244	val_loss: -0.0943753465313	lr: 0.001
+epoch: 3	loss: -0.195169278628	val_loss: -0.00526681774092	lr: 0.001
+epoch: 4	loss: -0.19309247509	val_loss: -0.137633461648	lr: 0.001
+epoch: 5	loss: -0.266544032766	val_loss: -0.10615766154	lr: 0.001
+epoch: 6	loss: -0.29798968	val_loss: -0.2131485102	lr: 0.0005
+epoch: 7	loss: -0.311323180811	val_loss: -0.179832447867	lr: 0.0005
+epoch: 8	loss: -0.22729089306	val_loss: -0.0806824937361	lr: 0.0005
+epoch: 9	loss: -0.303233900594	val_loss: -0.281981678632	lr: 0.0005
+epoch: 10	loss: -0.312843629853	val_loss: -0.239940552292	lr: 0.0005
+epoch: 11	loss: -0.273127069561	val_loss: -0.180868138415	lr: 0.0005
+epoch: 12	loss: -0.295610169634	val_loss: -0.282180317492	lr: 0.0005
+epoch: 13	loss: -0.29323248932	val_loss: -0.153401869179	lr: 0.0005
+epoch: 14	loss: -0.253247984006	val_loss: -0.195202290248	lr: 0.0005
+epoch: 15	loss: -0.283082577956	val_loss: -0.14467660198	lr: 0.0005
+epoch: 16	loss: -0.313429460948	val_loss: -0.245932290178	lr: 0.0005
+epoch: 17	loss: -0.328065809791	val_loss: -0.221999027667	lr: 0.00025
+epoch: 18	loss: -0.322781328271	val_loss: -0.218712070305	lr: 0.00025
+epoch: 19	loss: -0.322597174535	val_loss: -0.315869634458	lr: 0.00025
+epoch: 20	loss: -0.283249320499	val_loss: -0.337252092694	lr: 0.00025
+epoch: 21	loss: -0.313463803358	val_loss: -0.239818339231	lr: 0.00025
+epoch: 22	loss: -0.269027122043	val_loss: -0.250195808413	lr: 0.00025
+epoch: 23	loss: -0.28901739743	val_loss: -0.181842498552	lr: 0.00025
+epoch: 24	loss: -0.332079202949	val_loss: -0.366428057507	lr: 0.00025
+epoch: 25	loss: -0.292626681116	val_loss: -0.143505891206	lr: 0.00025
+epoch: 26	loss: -0.335564514702	val_loss: -0.2245482529	lr: 0.00025
+epoch: 27	loss: -0.352101791629	val_loss: -0.316975881819	lr: 0.00025
+epoch: 28	loss: -0.325007397546	val_loss: -0.254528556636	lr: 0.00025
+epoch: 29	loss: -0.324221893082	val_loss: -0.273477709068	lr: 0.000125
+epoch: 30	loss: -0.349067096716	val_loss: -0.328047318533	lr: 0.000125
+epoch: 31	loss: -0.370239452758	val_loss: -0.308068373947	lr: 0.000125
+epoch: 32	loss: -0.346255269291	val_loss: -0.371250513177	lr: 0.000125
+epoch: 33	loss: -0.346001533822	val_loss: -0.295497437425	lr: 0.000125
+epoch: 34	loss: -0.349277916502	val_loss: -0.270679845213	lr: 0.000125
+epoch: 35	loss: -0.357259660447	val_loss: -0.2758109629	lr: 0.000125
+epoch: 36	loss: -0.33070558276	val_loss: -0.244555845914	lr: 0.000125
+epoch: 37	loss: -0.336019286081	val_loss: -0.298262625801	lr: 6.25e-05
+epoch: 38	loss: -0.340696153189	val_loss: -0.283959884814	lr: 6.25e-05
+epoch: 39	loss: -0.334159912459	val_loss: -0.206721206331	lr: 6.25e-05
+epoch: 40	loss: -0.394768094963	val_loss: -0.309745667497	lr: 6.25e-05
 
-Epoch 00003: val_loss improved from 0.13443 to 0.11520, saving model to model.hdf5
-Epoch 4/1000
-100/100 [==============================] - 152s 2s/step - loss: 0.0407 - val_loss: 0.1304
 
-Epoch 00004: val_loss did not improve from 0.11520
-Epoch 5/1000
-100/100 [==============================] - 152s 2s/step - loss: 0.0281 - val_loss: 0.5231
+  File "/jet/var/python/lib/python3.6/site-packages/imageio/plugins/pillow.py", line 501, in pil_try_read
+    im.getdata()[0]
+  File "/jet/var/python/lib/python3.6/site-packages/PIL/Image.py", line 1253, in getdata
+    self.load()
+  File "/jet/var/python/lib/python3.6/site-packages/PIL/ImageFile.py", line 236, in load
+    len(b))
+OSError: image file is truncated (55 bytes not processed)
 
-Epoch 00005: val_loss did not improve from 0.11520
-Epoch 6/1000
-100/100 [==============================] - 152s 2s/step - loss: 0.0223 - val_loss: 0.0306
+During handling of the above exception, another exception occurred:
 
-Epoch 00006: val_loss improved from 0.11520 to 0.03062, saving model to model.hdf5
-Epoch 7/1000
-100/100 [==============================] - 152s 2s/step - loss: 0.0185 - val_loss: 0.0397
+Traceback (most recent call last):
+  File "/jet/var/python/lib/python3.6/site-packages/keras/utils/data_utils.py", line 578, in get
+    inputs = self.queue.get(block=True).get()
+  File "/jet/var/python/lib/python3.6/multiprocessing/pool.py", line 644, in get
+    raise self._value
+  File "/jet/var/python/lib/python3.6/multiprocessing/pool.py", line 119, in worker
+    result = (True, func(*args, **kwds))
+  File "/jet/var/python/lib/python3.6/site-packages/keras/utils/data_utils.py", line 401, in get_index
+    return _SHARED_SEQUENCES[uid][i]
+  File "/data/Scripts/ShipSegFunctions.py", line 120, in __getitem__
+    X, Y = self.generate(list_IDs_temp)
+  File "/data/Scripts/ShipSegFunctions.py", line 142, in generate
+    X[i] = read_transform_image(self.img_prefix + "/" + ID)
+  File "/data/Scripts/ShipSegFunctions.py", line 30, in read_transform_image
+    img = imageio.imread(img_file_path)
+  File "/jet/var/python/lib/python3.6/site-packages/imageio/core/functions.py", line 221, in imread
+    reader = read(uri, format, "i", **kwargs)
+  File "/jet/var/python/lib/python3.6/site-packages/imageio/core/functions.py", line 143, in get_reader
+    return format.get_reader(request)
+  File "/jet/var/python/lib/python3.6/site-packages/imageio/core/format.py", line 174, in get_reader
+    return self.Reader(self, request)
+  File "/jet/var/python/lib/python3.6/site-packages/imageio/core/format.py", line 224, in __init__
+    self._open(**self.request.kwargs.copy())
+  File "/jet/var/python/lib/python3.6/site-packages/imageio/plugins/pillow.py", line 406, in _open
+    return PillowFormat.Reader._open(self, pilmode=pilmode, as_gray=as_gray)
+  File "/jet/var/python/lib/python3.6/site-packages/imageio/plugins/pillow.py", line 125, in _open
+    pil_try_read(self._im)
+  File "/jet/var/python/lib/python3.6/site-packages/imageio/plugins/pillow.py", line 512, in pil_try_read
+    raise ValueError(error_message)
+ValueError: Could not load "" 
+Reason: "image file is truncated (55 bytes not processed)"
+Please see documentation at: http://pillow.readthedocs.io/en/latest/installation.html#external-libraries
 
-Epoch 00007: val_loss did not improve from 0.03062
-Epoch 8/1000
-100/100 [==============================] - 152s 2s/step - loss: 0.0162 - val_loss: 0.0309
+The above exception was the direct cause of the following exception:
 
-Epoch 00008: val_loss did not improve from 0.03062
-Epoch 9/1000
-100/100 [==============================] - 152s 2s/step - loss: 0.0163 - val_loss: 0.0298
+Traceback (most recent call last):
+  File "Train.py", line 296, in <module>
+    verbose=1)
+  File "/jet/var/python/lib/python3.6/site-packages/keras/legacy/interfaces.py", line 91, in wrapper
+    return func(*args, **kwargs)
+  File "/jet/var/python/lib/python3.6/site-packages/keras/engine/training.py", line 1415, in fit_generator
+    initial_epoch=initial_epoch)
+  File "/jet/var/python/lib/python3.6/site-packages/keras/engine/training_generator.py", line 177, in fit_generator
+    generator_output = next(output_generator)
+  File "/jet/var/python/lib/python3.6/site-packages/keras/utils/data_utils.py", line 584, in get
+    six.raise_from(StopIteration(e), e)
+  File "<string>", line 3, in raise_from
+StopIteration: Could not load "" 
+Reason: "image file is truncated (55 bytes not processed)"
+Please see documentation at: http://pillow.readthedocs.io/en/latest/installation.html#external-libraries
 
-Epoch 00009: val_loss improved from 0.03062 to 0.02977, saving model to model.hdf5
-Epoch 10/1000
-100/100 [==============================] - 153s 2s/step - loss: 0.0120 - val_loss: 0.0279
-
-Epoch 00010: val_loss improved from 0.02977 to 0.02790, saving model to model.hdf5
-Epoch 11/1000
-100/100 [==============================] - 153s 2s/step - loss: 0.0143 - val_loss: 0.0577
-
-Epoch 00011: val_loss did not improve from 0.02790
-Epoch 12/1000
-100/100 [==============================] - 152s 2s/step - loss: 0.0122 - val_loss: 0.0207
-
-Epoch 00012: val_loss improved from 0.02790 to 0.02070, saving model to model.hdf5
-Epoch 13/1000
-100/100 [==============================] - 152s 2s/step - loss: 0.0098 - val_loss: 0.0198
-
-Epoch 00013: val_loss improved from 0.02070 to 0.01985, saving model to model.hdf5
-Epoch 14/1000
-100/100 [==============================] - 152s 2s/step - loss: 0.0130 - val_loss: 0.0184
-
-Epoch 00014: val_loss improved from 0.01985 to 0.01836, saving model to model.hdf5
-Epoch 15/1000
-100/100 [==============================] - 152s 2s/step - loss: 0.0102 - val_loss: 0.1916
-
-Epoch 00015: val_loss did not improve from 0.01836
-Epoch 16/1000
-100/100 [==============================] - 152s 2s/step - loss: 0.0107 - val_loss: 0.0149
-
-Epoch 00016: val_loss improved from 0.01836 to 0.01494, saving model to model.hdf5
-Epoch 17/1000
-100/100 [==============================] - 153s 2s/step - loss: 0.0102 - val_loss: 0.0253
-
-Epoch 00017: val_loss did not improve from 0.01494
-Epoch 18/1000
-100/100 [==============================] - 152s 2s/step - loss: 0.0085 - val_loss: 0.0323
-
-Epoch 00018: val_loss did not improve from 0.01494

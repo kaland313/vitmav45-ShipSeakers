@@ -39,8 +39,11 @@ print(device_lib.list_local_devices())
 ########################################################################################################################
 image_path = "/run/media/kalap/Storage/Deep learning 2/train_v2"
 segmentation_data_file_path = '/run/media/kalap/Storage/Deep learning 2/train_ship_segmentations_v2.csv'
+model_path = "../Train Test Scripts on AWS/Scripts/"
+# model_path = ""
 
 resize_img_to = (768, 768)
+# resize_img_to = (192, 192)
 batch_size = 1
 
 ########################################################################################################################
@@ -51,13 +54,12 @@ batch_size = 1
 df_train = pd.read_csv(segmentation_data_file_path)
 
 # Load the test data ids saved by the Train file
-test_img_ids = np.load("../Train Test Scripts on AWS/Scripts/test_img_ids.npy")
+test_img_ids = np.load(model_path + "test_img_ids.npy")
 
-
-########################################################################################################################
+#######################################################################################################################
 # Load the network
 ########################################################################################################################
-model = load_model("../Train Test Scripts on AWS/Scripts/model.hdf5")
+model = load_model(model_path + "model.hdf5", custom_objects={'dice_coef_loss': dice_coef_loss})
 
 ########################################################################################################################
 # Test the network
@@ -82,7 +84,7 @@ test_generator = DataGenerator(
 #                                       steps=1, verbose =1)
 
 
-for i in range(5):
+for i in range(10):
     test_images, test_mask_true = test_generator.__getitem__(i)
     predictions = model.predict(test_images, verbose=1)
     disp_image_with_map2(test_images[0], test_mask_true[0], predictions[0])
