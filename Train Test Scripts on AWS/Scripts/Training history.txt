@@ -3,30 +3,30 @@ device_type: "CPU"
 memory_limit: 268435456
 locality {
 }
-incarnation: 10897107581439019885
+incarnation: 17637327195081446403
 , name: "/device:XLA_GPU:0"
 device_type: "XLA_GPU"
 memory_limit: 17179869184
 locality {
 }
-incarnation: 10790165402407741149
+incarnation: 2280677625495443260
 physical_device_desc: "device: XLA_GPU device"
 , name: "/device:XLA_CPU:0"
 device_type: "XLA_CPU"
 memory_limit: 17179869184
 locality {
 }
-incarnation: 15164036773811681054
+incarnation: 10080509075516032007
 physical_device_desc: "device: XLA_CPU device"
 , name: "/device:GPU:0"
 device_type: "GPU"
-memory_limit: 11281491559
+memory_limit: 11281553818
 locality {
   bus_id: 1
   links {
   }
 }
-incarnation: 17220388481981340874
+incarnation: 3840738368847657882
 physical_device_desc: "device: 0, name: Tesla K80, pci bus id: 0000:00:1e.0, compute capability: 3.7"
 ]
 
@@ -97,124 +97,53 @@ Non-trainable params: 1,280
 __________________________________________________________________________________________________
 
 
-epoch: 0	loss: -0.00872660059553	val_loss: -0.0100423634499	lr: 0.001
-epoch: 1	loss: -0.0222105591518	val_loss: -0.024309879824	lr: 0.001
-epoch: 2	loss: -0.0296893515474	val_loss: -0.00971411163786	lr: 0.001
-epoch: 3	loss: -0.0718629016811	val_loss: -0.00727117244941	lr: 0.001
-epoch: 4	loss: -0.1104439563	val_loss: -0.0100885804201	lr: 0.001
-epoch: 5	loss: -0.207846851734	val_loss: -0.0235312894644	lr: 0.001
-epoch: 6	loss: -0.161106625985	val_loss: -0.0312084045494	lr: 0.0005
-epoch: 7	loss: -0.246437461673	val_loss: -0.10746255694	lr: 0.0005
-epoch: 8	loss: -0.213948607873	val_loss: -0.189804373966	lr: 0.0005
-epoch: 9	loss: -0.224346215029	val_loss: -0.137725924939	lr: 0.0005
-epoch: 10	loss: -0.218412069156	val_loss: -0.148297697172	lr: 0.0005
-epoch: 11	loss: -0.229625485396	val_loss: -0.074264018207	lr: 0.0005
-epoch: 12	loss: -0.273656064791	val_loss: -0.159850245592	lr: 0.0005
-epoch: 13	loss: -0.28047241253	val_loss: -0.0829326540537	lr: 0.00025
-epoch: 14	loss: -0.236283141948	val_loss: -0.293989740867	lr: 0.00025
-epoch: 15	loss: -0.305164702638	val_loss: -0.141341466946	lr: 0.00025
-epoch: 16	loss: -0.230715580728	val_loss: -0.200090208845	lr: 0.00025
-epoch: 0	loss: -0.217928768621	val_loss: -0.140375543192	lr: 0.001
-epoch: 1	loss: -0.20911658855	val_loss: -0.264255430849	lr: 0.001
-epoch: 2	loss: -0.266962610244	val_loss: -0.0943753465313	lr: 0.001
-epoch: 3	loss: -0.195169278628	val_loss: -0.00526681774092	lr: 0.001
-epoch: 4	loss: -0.19309247509	val_loss: -0.137633461648	lr: 0.001
-epoch: 5	loss: -0.266544032766	val_loss: -0.10615766154	lr: 0.001
-epoch: 6	loss: -0.29798968	val_loss: -0.2131485102	lr: 0.0005
-epoch: 7	loss: -0.311323180811	val_loss: -0.179832447867	lr: 0.0005
-epoch: 8	loss: -0.22729089306	val_loss: -0.0806824937361	lr: 0.0005
-epoch: 9	loss: -0.303233900594	val_loss: -0.281981678632	lr: 0.0005
-epoch: 10	loss: -0.312843629853	val_loss: -0.239940552292	lr: 0.0005
-epoch: 11	loss: -0.273127069561	val_loss: -0.180868138415	lr: 0.0005
-epoch: 12	loss: -0.295610169634	val_loss: -0.282180317492	lr: 0.0005
-epoch: 13	loss: -0.29323248932	val_loss: -0.153401869179	lr: 0.0005
-epoch: 14	loss: -0.253247984006	val_loss: -0.195202290248	lr: 0.0005
-epoch: 15	loss: -0.283082577956	val_loss: -0.14467660198	lr: 0.0005
-epoch: 16	loss: -0.313429460948	val_loss: -0.245932290178	lr: 0.0005
-epoch: 17	loss: -0.328065809791	val_loss: -0.221999027667	lr: 0.00025
-epoch: 18	loss: -0.322781328271	val_loss: -0.218712070305	lr: 0.00025
-epoch: 19	loss: -0.322597174535	val_loss: -0.315869634458	lr: 0.00025
-epoch: 20	loss: -0.283249320499	val_loss: -0.337252092694	lr: 0.00025
-epoch: 21	loss: -0.313463803358	val_loss: -0.239818339231	lr: 0.00025
-epoch: 22	loss: -0.269027122043	val_loss: -0.250195808413	lr: 0.00025
-epoch: 23	loss: -0.28901739743	val_loss: -0.181842498552	lr: 0.00025
-epoch: 24	loss: -0.332079202949	val_loss: -0.366428057507	lr: 0.00025
-epoch: 25	loss: -0.292626681116	val_loss: -0.143505891206	lr: 0.00025
-epoch: 26	loss: -0.335564514702	val_loss: -0.2245482529	lr: 0.00025
-epoch: 27	loss: -0.352101791629	val_loss: -0.316975881819	lr: 0.00025
-epoch: 28	loss: -0.325007397546	val_loss: -0.254528556636	lr: 0.00025
-epoch: 29	loss: -0.324221893082	val_loss: -0.273477709068	lr: 0.000125
-epoch: 30	loss: -0.349067096716	val_loss: -0.328047318533	lr: 0.000125
-epoch: 31	loss: -0.370239452758	val_loss: -0.308068373947	lr: 0.000125
-epoch: 32	loss: -0.346255269291	val_loss: -0.371250513177	lr: 0.000125
-epoch: 33	loss: -0.346001533822	val_loss: -0.295497437425	lr: 0.000125
-epoch: 34	loss: -0.349277916502	val_loss: -0.270679845213	lr: 0.000125
-epoch: 35	loss: -0.357259660447	val_loss: -0.2758109629	lr: 0.000125
-epoch: 36	loss: -0.33070558276	val_loss: -0.244555845914	lr: 0.000125
-epoch: 37	loss: -0.336019286081	val_loss: -0.298262625801	lr: 6.25e-05
-epoch: 38	loss: -0.340696153189	val_loss: -0.283959884814	lr: 6.25e-05
-epoch: 39	loss: -0.334159912459	val_loss: -0.206721206331	lr: 6.25e-05
-epoch: 40	loss: -0.394768094963	val_loss: -0.309745667497	lr: 6.25e-05
-
-
-  File "/jet/var/python/lib/python3.6/site-packages/imageio/plugins/pillow.py", line 501, in pil_try_read
-    im.getdata()[0]
-  File "/jet/var/python/lib/python3.6/site-packages/PIL/Image.py", line 1253, in getdata
-    self.load()
-  File "/jet/var/python/lib/python3.6/site-packages/PIL/ImageFile.py", line 236, in load
-    len(b))
-OSError: image file is truncated (55 bytes not processed)
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/jet/var/python/lib/python3.6/site-packages/keras/utils/data_utils.py", line 578, in get
-    inputs = self.queue.get(block=True).get()
-  File "/jet/var/python/lib/python3.6/multiprocessing/pool.py", line 644, in get
-    raise self._value
-  File "/jet/var/python/lib/python3.6/multiprocessing/pool.py", line 119, in worker
-    result = (True, func(*args, **kwds))
-  File "/jet/var/python/lib/python3.6/site-packages/keras/utils/data_utils.py", line 401, in get_index
-    return _SHARED_SEQUENCES[uid][i]
-  File "/data/Scripts/ShipSegFunctions.py", line 120, in __getitem__
-    X, Y = self.generate(list_IDs_temp)
-  File "/data/Scripts/ShipSegFunctions.py", line 142, in generate
-    X[i] = read_transform_image(self.img_prefix + "/" + ID)
-  File "/data/Scripts/ShipSegFunctions.py", line 30, in read_transform_image
-    img = imageio.imread(img_file_path)
-  File "/jet/var/python/lib/python3.6/site-packages/imageio/core/functions.py", line 221, in imread
-    reader = read(uri, format, "i", **kwargs)
-  File "/jet/var/python/lib/python3.6/site-packages/imageio/core/functions.py", line 143, in get_reader
-    return format.get_reader(request)
-  File "/jet/var/python/lib/python3.6/site-packages/imageio/core/format.py", line 174, in get_reader
-    return self.Reader(self, request)
-  File "/jet/var/python/lib/python3.6/site-packages/imageio/core/format.py", line 224, in __init__
-    self._open(**self.request.kwargs.copy())
-  File "/jet/var/python/lib/python3.6/site-packages/imageio/plugins/pillow.py", line 406, in _open
-    return PillowFormat.Reader._open(self, pilmode=pilmode, as_gray=as_gray)
-  File "/jet/var/python/lib/python3.6/site-packages/imageio/plugins/pillow.py", line 125, in _open
-    pil_try_read(self._im)
-  File "/jet/var/python/lib/python3.6/site-packages/imageio/plugins/pillow.py", line 512, in pil_try_read
-    raise ValueError(error_message)
-ValueError: Could not load "" 
-Reason: "image file is truncated (55 bytes not processed)"
-Please see documentation at: http://pillow.readthedocs.io/en/latest/installation.html#external-libraries
-
-The above exception was the direct cause of the following exception:
-
-Traceback (most recent call last):
-  File "Train.py", line 296, in <module>
-    verbose=1)
-  File "/jet/var/python/lib/python3.6/site-packages/keras/legacy/interfaces.py", line 91, in wrapper
-    return func(*args, **kwargs)
-  File "/jet/var/python/lib/python3.6/site-packages/keras/engine/training.py", line 1415, in fit_generator
-    initial_epoch=initial_epoch)
-  File "/jet/var/python/lib/python3.6/site-packages/keras/engine/training_generator.py", line 177, in fit_generator
-    generator_output = next(output_generator)
-  File "/jet/var/python/lib/python3.6/site-packages/keras/utils/data_utils.py", line 584, in get
-    six.raise_from(StopIteration(e), e)
-  File "<string>", line 3, in raise_from
-StopIteration: Could not load "" 
-Reason: "image file is truncated (55 bytes not processed)"
-Please see documentation at: http://pillow.readthedocs.io/en/latest/installation.html#external-libraries
-
+epoch: 0	loss: -0.300364015115	val_loss: -0.129578726194	lr: 0.001
+epoch: 1	loss: -0.327489598632	val_loss: -0.146529755386	lr: 0.001
+epoch: 2	loss: -0.276057328915	val_loss: -0.276322260627	lr: 0.001
+epoch: 3	loss: -0.301171096516	val_loss: -0.111248222057	lr: 0.001
+epoch: 4	loss: -0.297820472206	val_loss: -0.364087838922	lr: 0.001
+epoch: 5	loss: -0.347043108571	val_loss: -0.344825744244	lr: 0.001
+epoch: 6	loss: -0.288811493672	val_loss: -0.284805251266	lr: 0.001
+epoch: 7	loss: -0.315972487365	val_loss: -0.246999401908	lr: 0.001
+epoch: 8	loss: -0.294058100584	val_loss: -0.372253551342	lr: 0.001
+epoch: 9	loss: -0.283987252903	val_loss: -0.301373417311	lr: 0.001
+epoch: 10	loss: -0.341983016955	val_loss: -0.263274180693	lr: 0.001
+epoch: 11	loss: -0.317308563718	val_loss: -0.38228671557	lr: 0.001
+epoch: 12	loss: -0.337796785877	val_loss: -0.300532381018	lr: 0.001
+epoch: 13	loss: -0.355496389313	val_loss: -0.329560843672	lr: 0.001
+epoch: 14	loss: -0.317420101362	val_loss: -0.334139401049	lr: 0.001
+epoch: 15	loss: -0.359830838539	val_loss: -0.210389494271	lr: 0.001
+epoch: 16	loss: -0.353206486831	val_loss: -0.271382327263	lr: 0.0005
+epoch: 17	loss: -0.314980583652	val_loss: -0.255704460773	lr: 0.0005
+epoch: 18	loss: -0.330463121658	val_loss: -0.274375549484	lr: 0.0005
+epoch: 19	loss: -0.399494878328	val_loss: -0.28690407032	lr: 0.0005
+epoch: 20	loss: -0.354646511157	val_loss: -0.412540519796	lr: 0.00025
+epoch: 21	loss: -0.345055248841	val_loss: -0.295249959687	lr: 0.00025
+epoch: 22	loss: -0.385920382419	val_loss: -0.400967942784	lr: 0.00025
+epoch: 23	loss: -0.344449720329	val_loss: -0.401260551113	lr: 0.00025
+epoch: 24	loss: -0.369119778938	val_loss: -0.275045689882	lr: 0.00025
+epoch: 25	loss: -0.367620466557	val_loss: -0.404416089552	lr: 0.000125
+epoch: 26	loss: -0.354916002779	val_loss: -0.452306452274	lr: 0.000125
+epoch: 27	loss: -0.356730091398	val_loss: -0.35514671182	lr: 0.000125
+epoch: 28	loss: -0.414056327581	val_loss: -0.322135248017	lr: 0.000125
+epoch: 29	loss: -0.392756475971	val_loss: -0.297498163895	lr: 0.000125
+epoch: 30	loss: -0.361299789248	val_loss: -0.383674930891	lr: 0.000125
+epoch: 31	loss: -0.363871518247	val_loss: -0.448427250525	lr: 6.25e-05
+epoch: 32	loss: -0.385593832074	val_loss: -0.3686963293	lr: 6.25e-05
+epoch: 33	loss: -0.444553515547	val_loss: -0.402340559503	lr: 6.25e-05
+epoch: 34	loss: -0.368390036529	val_loss: -0.379513865258	lr: 6.25e-05
+epoch: 35	loss: -0.351280950773	val_loss: -0.390564083263	lr: 3.125e-05
+epoch: 36	loss: -0.362820312675	val_loss: -0.329315008222	lr: 3.125e-05
+epoch: 37	loss: -0.358930712869	val_loss: -0.460981166773	lr: 3.125e-05
+epoch: 38	loss: -0.356116254303	val_loss: -0.423519867817	lr: 3.125e-05
+epoch: 39	loss: -0.342257060265	val_loss: -0.448727878244	lr: 3.125e-05
+epoch: 40	loss: -0.432899632907	val_loss: -0.293564838944	lr: 3.125e-05
+epoch: 41	loss: -0.43343879712	val_loss: -0.287505098921	lr: 3.125e-05
+epoch: 42	loss: -0.358614060766	val_loss: -0.358943302161	lr: 1.5625e-05
+epoch: 43	loss: -0.366366575989	val_loss: -0.409320459362	lr: 1.5625e-05
+epoch: 44	loss: -0.375844942686	val_loss: -0.420725621292	lr: 1.5625e-05
+epoch: 45	loss: -0.390599238206	val_loss: -0.379720556579	lr: 1.5625e-05
+epoch: 46	loss: -0.395244212874	val_loss: -0.335406553916	lr: 7.8125e-06
+epoch: 47	loss: -0.401379804173	val_loss: -0.362631227672	lr: 7.8125e-06
+epoch: 48	loss: -0.404321670943	val_loss: -0.370730676726	lr: 7.8125e-06
+epoch: 49	loss: -0.438305641046	val_loss: -0.437365972917	lr: 7.8125e-06

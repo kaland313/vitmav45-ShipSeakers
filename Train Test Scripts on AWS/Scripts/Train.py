@@ -263,24 +263,24 @@ model = load_model("model.hdf5", custom_objects={'dice_coef_loss': dice_coef_los
 
 # opt = SGD(lr=1e-3, decay=1e-6, momentum=0.9, nesterov=True)
 # opt = Adam(lr=1e-3, decay=1e-6)
-model.compile(optimizer='adam', loss=dice_coef_loss)
+model.compile(optimizer='rmsprop', loss=dice_coef_loss)
 print(model.summary())
 
-f = open('Training history.txt', 'a')
-# f = open('Training history.txt', 'w')
-# f.write(str(device_lib.list_local_devices()))
-# f.write("\n\n")
-# model.summary(print_fn=lambda x: f.write(x + '\n'))
-# f.write("\n\n")
+# f = open('Training history.txt', 'a')
+f = open('Training history.txt', 'w')
+f.write(str(device_lib.list_local_devices()))
+f.write("\n\n")
+model.summary(print_fn=lambda x: f.write(x + '\n'))
+f.write("\n\n")
 
-# plot_model(model, to_file='model.png', show_shapes=True)
+plot_model(model, to_file='model.png', show_shapes=True)
 
 ########################################################################################################################
 # Train the network
 ########################################################################################################################
 early_stopping = EarlyStopping(patience=12, verbose=1)
 checkpoint = ModelCheckpoint(filepath='model.hdf5', save_best_only=True, verbose=1)
-reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=4, min_lr=1e-6)
+# reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=5, min_lr=1e-6)
 logger = LambdaCallback(on_epoch_end=lambda epoch, logs: f.write('epoch: ' + str(epoch) +
                                                                  '\tloss: ' + str(logs['loss']) +
                                                                  '\tval_loss: ' + str(logs['val_loss']) +
@@ -292,7 +292,7 @@ history = model.fit_generator(generator=training_generator,
                               epochs=1000,
                               validation_data=validation_generator,
                               validation_steps=len(validation_generator),
-                              callbacks=[checkpoint, early_stopping, reduce_lr, logger],
+                              callbacks=[checkpoint, early_stopping, logger],
                               verbose=1)
 
 #history = model.fit_generator(generator=training_generator,
