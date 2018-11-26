@@ -147,3 +147,79 @@ epoch: 46	loss: -0.395244212874	val_loss: -0.335406553916	lr: 7.8125e-06
 epoch: 47	loss: -0.401379804173	val_loss: -0.362631227672	lr: 7.8125e-06
 epoch: 48	loss: -0.404321670943	val_loss: -0.370730676726	lr: 7.8125e-06
 epoch: 49	loss: -0.438305641046	val_loss: -0.437365972917	lr: 7.8125e-06
+Training stopped here with early stopping.
+Training restarted here without the learning rate reduction on plateu callback.
+Epoch 1/1000
+100/100 [==============================] - 162s 2s/step - loss: -0.3765 - val_loss: -0.2405
+
+Epoch 00001: val_loss improved from inf to -0.24049, saving model to model.hdf5
+Epoch 2/1000
+100/100 [==============================] - 151s 2s/step - loss: -0.3558 - val_loss: -0.2573
+
+Epoch 00002: val_loss improved from -0.24049 to -0.25731, saving model to model.hdf5
+Epoch 3/1000
+100/100 [==============================] - 152s 2s/step - loss: -0.3361 - val_loss: -0.1417
+
+Epoch 00003: val_loss did not improve from -0.25731
+Epoch 4/1000
+100/100 [==============================] - 150s 2s/step - loss: -0.3627 - val_loss: -0.1956
+
+Epoch 00004: val_loss did not improve from -0.25731
+Epoch 5/1000
+100/100 [==============================] - 150s 1s/step - loss: -0.2942 - val_loss: -0.3818
+
+Epoch 00005: val_loss improved from -0.25731 to -0.38177, saving model to model.hdf5
+Epoch 6/1000
+100/100 [==============================] - 150s 1s/step - loss: -0.3055 - val_loss: -0.2269
+
+Epoch 00006: val_loss did not improve from -0.38177
+Epoch 7/1000
+100/100 [==============================] - 150s 1s/step - loss: -0.3059 - val_loss: -0.3999
+
+Epoch 00007: val_loss improved from -0.38177 to -0.39993, saving model to model.hdf5
+Epoch 8/1000
+100/100 [==============================] - 150s 2s/step - loss: -0.3830 - val_loss: -0.3495
+
+Epoch 00008: val_loss did not improve from -0.39993
+Epoch 9/1000
+100/100 [==============================] - 152s 2s/step - loss: -0.3215 - val_loss: -0.2492
+
+Epoch 00009: val_loss did not improve from -0.39993
+Epoch 10/1000
+100/100 [==============================] - 152s 2s/step - loss: -0.2953 - val_loss: -0.4449
+
+Epoch 00010: val_loss improved from -0.39993 to -0.44489, saving model to model.hdf5
+Epoch 11/1000
+100/100 [==============================] - 151s 2s/step - loss: -0.3906 - val_loss: -0.2371
+
+Epoch 00011: val_loss did not improve from -0.44489
+Epoch 12/1000
+100/100 [==============================] - 150s 1s/step - loss: -0.3991 - val_loss: -0.3227
+
+Epoch 00012: val_loss did not improve from -0.44489
+Epoch 13/1000
+100/100 [==============================] - 150s 2s/step - loss: -0.3184 - val_loss: -0.2944
+
+Epoch 00013: val_loss did not improve from -0.44489
+Epoch 14/1000
+100/100 [==============================] - 151s 2s/step - loss: -0.3343 - val_loss: -0.2926
+
+Epoch 00014: val_loss did not improve from -0.44489
+Epoch 15/1000
+100/100 [==============================] - 151s 2s/step - loss: -0.3378 - val_loss: -0.2760
+
+Epoch 00015: val_loss did not improve from -0.44489
+Epoch 16/1000
+100/100 [==============================] - 151s 2s/step - loss: -0.3038 - val_loss: -0.2444
+
+Epoch 00016: val_loss did not improve from -0.44489
+Epoch 17/1000
+100/100 [==============================] - 151s 2s/step - loss: -0.3476 - val_loss: -0.3277
+
+Epoch 00017: val_loss did not improve from -0.44489
+Epoch 18/1000
+100/100 [==============================] - 152s 2s/step - loss: -0.3706 - val_loss: -0.3034
+
+Epoch 00018: val_loss did not improve from -0.44489
+
+Unfortuanetly the model couldn't improve past -0.46 validation accuracy

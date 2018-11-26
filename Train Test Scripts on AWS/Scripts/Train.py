@@ -266,14 +266,14 @@ model = load_model("model.hdf5", custom_objects={'dice_coef_loss': dice_coef_los
 model.compile(optimizer='rmsprop', loss=dice_coef_loss)
 print(model.summary())
 
-# f = open('Training history.txt', 'a')
-f = open('Training history.txt', 'w')
-f.write(str(device_lib.list_local_devices()))
-f.write("\n\n")
-model.summary(print_fn=lambda x: f.write(x + '\n'))
-f.write("\n\n")
+f = open('Training history.txt', 'a')
+#f = open('Training history.txt', 'w')
+#f.write(str(device_lib.list_local_devices()))
+#f.write("\n\n")
+#model.summary(print_fn=lambda x: f.write(x + '\n'))
+#f.write("\n\n")
 
-plot_model(model, to_file='model.png', show_shapes=True)
+#plot_model(model, to_file='model.png', show_shapes=True)
 
 ########################################################################################################################
 # Train the network
@@ -284,7 +284,8 @@ checkpoint = ModelCheckpoint(filepath='model.hdf5', save_best_only=True, verbose
 logger = LambdaCallback(on_epoch_end=lambda epoch, logs: f.write('epoch: ' + str(epoch) +
                                                                  '\tloss: ' + str(logs['loss']) +
                                                                  '\tval_loss: ' + str(logs['val_loss']) +
-                                                                 '\tlr: '+ str(logs['lr']) + '\n'),
+                                                                 #'\tlr: '+ str(logs['lr']) + 
+                                                                 '\n'),
                         on_train_end=lambda logs: f.close())
 
 history = model.fit_generator(generator=training_generator,
