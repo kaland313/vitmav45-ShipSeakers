@@ -46,17 +46,24 @@ print(device_lib.list_local_devices())
 ########################################################################################################################
 # PARAMETERS
 ########################################################################################################################
+# Data on AWS
 image_path = "/data/train_v2"
-segmentation_data_file_path = '/data/train_ship_segmentations_v2.csv' # '/run/media/kalap/Storage/Deep learning 2/train_ship_segmentations_v2.csv'
+segmentation_data_file_path = '/data/train_ship_segmentations_v2.csv'
+# Data locally
+# image_path = "/run/media/kalap/Storage/Deep learning 2/train_v2"
+# segmentation_data_file_path = '/run/media/kalap/Storage/Deep learning 2/train_ship_segmentations_v2.csv'
+# Data on Github
 # image_path = "../data/train_img"
 # segmentation_data_file_path = '../data/train_ship_segmentations_v2.csv'
+
 valid_split = 0.15
 test_split = 0.15
 
-resize_img_to = (768, 768)
+# resize_img_to = (768, 768)
 # resize_img_to = (384, 384)
-# resize_img_to = (192, 192)
-batch_size = 4
+# resize_img_to = (256, 256)
+resize_img_to = (192, 192)
+batch_size = 8
 
 ########################################################################################################################
 # Load and prepare the data
@@ -72,11 +79,11 @@ df_train = pd.read_csv(segmentation_data_file_path)
 # for img_file in img_files:
 #     df_train['img_found'] = (df_train['img_found']) | (df_train['ImageId']==img_file)
 # df_train = df_train[df_train['img_found']]
-# df_train = df_train.drop('img_found',axis = 1)
+# df_train = df_train.drop('img_found', axis=1)
 # df_train = df_train.reset_index(drop=True)
 
 # Split the data
-train_img_ids, valid_img_ids, test_img_ids = separate(df_train['ImageId'].values, valid_split, test_split)
+train_img_ids, valid_img_ids, test_img_ids = separate(df_train['ImageId'].values, valid_split, test_split, shuffle=True)
 np.save("test_img_ids.npy", test_img_ids)
 
 # Define the generators
@@ -104,14 +111,12 @@ validation_generator = DataGenerator(
 )
 
 # # Test the generators
-# gen_img, gen_mask = training_generator.__getitem__(10)
-# print(gen_img.shape, gen_mask.shape)
-# disp_image_with_map(gen_img[0], gen_mask[0])
+# for iii in range(26):
+#     gen_img, gen_mask = training_generator.__getitem__(0)
+#     # print(gen_img.shape, gen_mask.shape)
+#     disp_image_with_map(gen_img[0], gen_mask[0])
+#     training_generator.on_epoch_end()
 
-
-
-#178573
-# print(df_train.at[178573, 'ImageId'],df_train.at[178573, 'EncodedPixels'])
 
 ########################################################################################################################
 # Model definition
@@ -190,7 +195,7 @@ def Unet_decoder_layer(input_layer,kernel,filter_size,pool_size,residual_connect
 
 def Unet(input_layer):
     kernel = 3
-    filter_size = 32
+    filter_size = 64
     pool_size = 2
     residual_connections = []
 
@@ -201,9 +206,13 @@ def Unet(input_layer):
     x, residual_connection = Unet_encoder_layer(x, kernel, filter_size, pool_size)
     residual_connections.append(residual_connection)
 
-    # filter_size *= 2
-    # x, residual_connection = Unet_encoder_layer(x, kernel, filter_size, pool_size)
-    # residual_connections.append(residual_connection)
+    filter_size *= 2
+    x, residual_connection = Unet_encoder_layer(x, kernel, filter_size, pool_size)
+    residual_connections.append(residual_connection)
+
+    filter_size *= 2
+    x, residual_connection = Unet_encoder_layer(x, kernel, filter_size, pool_size)
+    residual_connections.append(residual_connection)
 
     filter_size *= 2
     x = Conv2D(filter_size, kernel, padding='same', activation='relu')(x)
@@ -211,9 +220,13 @@ def Unet(input_layer):
     x = Conv2D(filter_size, kernel, padding='same', activation='relu')(x)
     x = BatchNormalization()(x)
 
-    # filter_size /= 2
-    # x = Unet_decoder_layer(x, kernel, filter_size, pool_size, residual_connections[-1])
-    # residual_connections = residual_connections[:-1]
+    filter_size /= 2
+    x = Unet_decoder_layer(x, kernel, filter_size, pool_size, residual_connections[-1])
+    residual_connections = residual_connections[:-1]
+
+    filter_size /= 2
+    x = Unet_decoder_layer(x, kernel, filter_size, pool_size, residual_connections[-1])
+    residual_connections = residual_connections[:-1]
 
     filter_size /= 2
     x = Unet_decoder_layer(x, kernel, filter_size, pool_size, residual_connections[-1])
@@ -228,63 +241,35 @@ def Unet(input_layer):
 
 
 ########################################################################################################################
-# Define custom losses
-########################################################################################################################
-def dice_coef(y_true, y_pred):
-    y_true_f = K.flatten(y_true)
-    y_pred_f = K.flatten(y_pred)
-    intersection = K.sum(y_true_f * y_pred_f)
-    return (2.0 * intersection + 1.0) / (K.sum(y_true_f) + K.sum(y_pred_f) + 1.0)
-
-
-def jacard_coef(y_true, y_pred):
-    y_true_f = K.flatten(y_true)
-    y_pred_f = K.flatten(y_pred)
-    intersection = K.sum(y_true_f * y_pred_f)
-    return (intersection + 1.0) / (K.sum(y_true_f) + K.sum(y_pred_f) - intersection + 1.0)
-
-
-def jacard_coef_loss(y_true, y_pred):
-    return -jacard_coef(y_true, y_pred)
-
-
-def dice_coef_loss(y_true, y_pred):
-    return -dice_coef(y_true, y_pred)
-
-
-########################################################################################################################
 # Build the model
 ########################################################################################################################
-
-input_layer = Input((*dimension_of_the_image, 3))
+input_layer = Input((None, None, 3))
 output_layer = Unet(input_layer)
-# model = Model(inputs=input_layer, outputs=output_layer)
-model = load_model("model.hdf5", custom_objects={'dice_coef_loss': dice_coef_loss})
+
+# model = load_model("model.hdf5", custom_objects={'dice_coef_loss': dice_coef_loss})
+model = Model(inputs=input_layer, outputs=output_layer)
 
 # opt = SGD(lr=1e-3, decay=1e-6, momentum=0.9, nesterov=True)
-# opt = Adam(lr=1e-3, decay=1e-6)
-model.compile(optimizer='rmsprop', loss=dice_coef_loss)
+model.compile(optimizer='adam', loss='binary_crossentropy')
 print(model.summary())
 
-f = open('Training history.txt', 'a')
-#f = open('Training history.txt', 'w')
-#f.write(str(device_lib.list_local_devices()))
-#f.write("\n\n")
-#model.summary(print_fn=lambda x: f.write(x + '\n'))
-#f.write("\n\n")
+# f = open('Training history.txt', 'a')
+f = open('Training history.txt', 'w')
+f.write(str(device_lib.list_local_devices()))
+f.write("\n\n")
+model.summary(print_fn=lambda x: f.write(x + '\n'))
+f.write("\n\n")
 
-#plot_model(model, to_file='model.png', show_shapes=True)
+plot_model(model, to_file='model.png', show_shapes=True)
 
 ########################################################################################################################
 # Train the network
 ########################################################################################################################
-early_stopping = EarlyStopping(patience=12, verbose=1)
+early_stopping = EarlyStopping(patience=10, verbose=1)
 checkpoint = ModelCheckpoint(filepath='model.hdf5', save_best_only=True, verbose=1)
-# reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=5, min_lr=1e-6)
 logger = LambdaCallback(on_epoch_end=lambda epoch, logs: f.write('epoch: ' + str(epoch) +
                                                                  '\tloss: ' + str(logs['loss']) +
                                                                  '\tval_loss: ' + str(logs['val_loss']) +
-                                                                 #'\tlr: '+ str(logs['lr']) + 
                                                                  '\n'),
                         on_train_end=lambda logs: f.close())
 
@@ -296,11 +281,4 @@ history = model.fit_generator(generator=training_generator,
                               callbacks=[checkpoint, early_stopping, logger],
                               verbose=1)
 
-#history = model.fit_generator(generator=training_generator,
-#                   steps_per_epoch=200,
-#                    epochs=10,
-#                    validation_data=validation_generator,
-#                    validation_steps=200,
-#                    callbacks=[checkpointer, early_stopping],
-#                    verbose=1)
-# np.save("training_history.npy", history)
+np.save("training_history.npy", history)
