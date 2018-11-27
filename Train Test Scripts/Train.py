@@ -266,11 +266,9 @@ plot_model(model, to_file='model.png', show_shapes=True)
 ########################################################################################################################
 early_stopping = EarlyStopping(patience=10, verbose=1)
 checkpoint = ModelCheckpoint(filepath='model.hdf5', save_best_only=True, verbose=1)
-# reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=5, min_lr=1e-5, verbose=1)
 logger = LambdaCallback(on_epoch_end=lambda epoch, logs: f.write('epoch: ' + str(epoch) +
                                                                  '\tloss: ' + str(logs['loss']) +
                                                                  '\tval_loss: ' + str(logs['val_loss']) +
-                                                                 # '\tlr: '+ str(logs['lr']) +
                                                                  '\n'),
                         on_train_end=lambda logs: f.close())
 
@@ -282,11 +280,4 @@ history = model.fit_generator(generator=training_generator,
                               callbacks=[checkpoint, early_stopping, logger],
                               verbose=1)
 
-#history = model.fit_generator(generator=training_generator,
-#                   steps_per_epoch=200,
-#                    epochs=10,
-#                    validation_data=validation_generator,
-#                    validation_steps=200,
-#                    callbacks=[checkpointer, early_stopping],
-#                    verbose=1)
 np.save("training_history.npy", history)
