@@ -39,8 +39,8 @@ print(device_lib.list_local_devices())
 ########################################################################################################################
 image_path = "/run/media/kalap/Storage/Deep learning 2/train_v2"
 segmentation_data_file_path = '/run/media/kalap/Storage/Deep learning 2/train_ship_segmentations_v2.csv'
-model_path = "../Train Test Scripts on AWS/Scripts/"
-# model_path = ""
+# model_path = "../Train Test Scripts on AWS/Scripts/"
+model_path = ""
 
 resize_img_to = (768, 768)
 # resize_img_to = (192, 192)
@@ -60,7 +60,7 @@ test_img_ids = np.load(model_path + "test_img_ids.npy")
 # Load the network
 ########################################################################################################################
 model = load_model(model_path + "model.hdf5", custom_objects={'dice_coef_loss': dice_coef_loss})
-
+print(model.summary())
 ########################################################################################################################
 # Test the network
 ########################################################################################################################

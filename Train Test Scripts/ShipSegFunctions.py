@@ -11,6 +11,13 @@ from keras.applications import imagenet_utils
 from keras.utils import Sequence
 from keras import backend as K
 
+import matplotlib.pylab as pl
+from matplotlib.colors import ListedColormap
+cmap = pl.cm.viridis
+my_cmap = cmap(np.arange(cmap.N))
+my_cmap[:,-1] = np.linspace(0, 1, cmap.N)
+my_cmap = ListedColormap(my_cmap)
+
 def preprocess_input(x):
     """Preprocesses a Numpy array encoding a batch of images.
     # Arguments
@@ -34,7 +41,7 @@ def read_transform_image(img_file_path):
     return preprocess_input(img)
 
 
-def separate(train_data, valid_split=0.2, test_split=0.2):
+def separate(data, valid_split=0.2, test_split=0., shuffle=True):
     """
     Separate the dataset into 3 different part. Train, validation and test.
     train_data and test_data sets are 1D numpy arrays.
@@ -42,14 +49,14 @@ def separate(train_data, valid_split=0.2, test_split=0.2):
     returns the train, valid and test data sets
     """
 
-    sum_ = train_data.shape[0]
-    train = None
-    valid = None
-    test = None
+    sum_ = data.shape[0]
 
-    train = train_data[:int(sum_ * (1 - valid_split - test_split))]
-    valid = train_data[int(sum_ * (1 - valid_split - test_split)):int(sum_ * (1 - test_split))]
-    test = train_data[int(sum_ * (1 - test_split)):]
+    if shuffle:
+        np.random.shuffle(data)
+
+    train = data[:int(sum_ * (1 - valid_split - test_split))]
+    valid = data[int(sum_ * (1 - valid_split - test_split)):int(sum_ * (1 - test_split))]
+    test = data[int(sum_ * (1 - test_split)):]
 
     return train, valid, test
 
@@ -124,8 +131,8 @@ def plot_history(network_history):
 # Reference: https://stanford.edu/~shervine/blog/keras-how-to-generate-data-on-the-fly
 class DataGenerator(Sequence):
 
-    def __init__(self, list_IDs, ship_seg_df, img_path_prefix, batch_size=32, dim=(32, 32, 32),
-                 n_channels=1, n_classes=10, shuffle=True, forced_len=0):
+    def __init__(self, list_IDs, ship_seg_df, img_path_prefix, batch_size=32, dim=(32, 32), split_to_sub_img=True,
+                 n_channels=3, shuffle_on_every_epoch=True, forced_len=0):
         # Initialization
         self.dim = dim  # dataset's dimension
         self.img_prefix = img_path_prefix  # location of the dataset
@@ -133,17 +140,50 @@ class DataGenerator(Sequence):
         self.ship_seg_df = ship_seg_df.copy()  # a dataframe storing the filenames and ship masks
         self.list_IDs = list_IDs  # a list containing image names to be used by the generator
         self.n_channels = n_channels  # number of rgb chanels
-        # self.n_classes = n_classes                 # ???
-        self.shuffle = shuffle  # shuffle the data
-        self.forced_len = forced_len
-        self.on_epoch_end()
+
+        self.forced_len = forced_len #Needed due to a bug in predict_generator
+
+        # defines how many sub images should be generated. 50% overlap is used, so this should be an odd number
+        # self.sub_img_ratio = split_img_ratio
+
+        self.split_to_sub_img = split_to_sub_img
+        #  Due to the 50% overlap of the number of sub images per whole image is:
+        self.sub_img_count = int((768.0/dim[0]))**2 + int(((768.0/dim[0])-1))**2
+        self.sub_img_idx = 0
+        self.sub_img_loc = [0,0]
+
+        # shuffle the data on after each epoch so data is split into different batches in every epoch
+        self.shuffle_on_every_epoch = shuffle_on_every_epoch
+        self.indexes = np.arange(len(self.list_IDs))  # initialize the self.indexes variable
 
     def on_epoch_end(self):
         # Updates indexes after each epoch'
         self.indexes = np.arange(len(self.list_IDs))
-        # print("Ep end: {0}".format(self.indexes))
-        if self.shuffle == True:
+        if self.shuffle_on_every_epoch:
             np.random.shuffle(self.indexes)
+
+        self.sub_img_idx = (self.sub_img_idx + 1) % self.sub_img_count
+
+        self.sub_img_loc[0] = self.sub_img_loc[0] + self.dim[0]
+        if self.sub_img_loc[0] + self.dim[0] > 768:
+            # new row
+            if self.sub_img_idx >= int((768.0 / self.dim[0]))**2 - 1:
+                self.sub_img_loc[0] = int(self.dim[0] * 0.5)
+            else:
+                self.sub_img_loc[0] = 0
+
+            self.sub_img_loc[1] = self.sub_img_loc[1] + self.dim[1]
+
+        if self.sub_img_loc[1] + self.dim[1] > 768:
+            if self.sub_img_idx >= int((768.0 / self.dim[0])) ** 2 - 1:
+                self.sub_img_loc[0] = int(self.dim[0] * 0.5)
+                self.sub_img_loc[1] = int(self.dim[1] * 0.5)
+            else:
+                # restart from the first corner
+                self.sub_img_loc = [0, 0]
+
+        print(self.sub_img_loc, self.sub_img_idx)
+
 
     def __len__(self):
         # Denotes the number of batches per epoch'
@@ -157,12 +197,8 @@ class DataGenerator(Sequence):
         # Generate indexes of the batch
         indexes = self.indexes[index * self.batch_size:(index + 1) * self.batch_size]
 
-        # print("getitem: {}".format(self.indexes))
-
         # Find list of IDs
         list_IDs_temp = [self.list_IDs[k] for k in indexes]
-
-        # print("getitem: {}".format(list_IDs_temp))
 
         # Generate data
         X, Y = self.generate(list_IDs_temp)
@@ -186,12 +222,21 @@ class DataGenerator(Sequence):
             for mask_coded in mask_list:
                 mask += rle_decode(mask_coded)
 
+            img = read_transform_image(self.img_prefix + "/" + ID)
+
+            # Get sub image or resize
             if self.dim == (768, 768):
-                X[i] = read_transform_image(self.img_prefix + "/" + ID)
+                X[i] = img
                 Y[i] = np.atleast_3d(mask)
             else:
-                X[i] = cv2.resize(read_transform_image(self.img_prefix + "/" + ID), self.dim)
-                Y[i] = np.atleast_3d(cv2.resize(mask, self.dim, interpolation=cv2.INTER_NEAREST))
+                if self.split_to_sub_img:
+                    X[i] = img[self.sub_img_loc[0] : self.sub_img_loc[0]+self.dim[0],
+                               self.sub_img_loc[1] : self.sub_img_loc[1] + self.dim[1]]
+                    Y[i] = np.atleast_3d(mask[self.sub_img_loc[0]: self.sub_img_loc[0] + self.dim[0],
+                                              self.sub_img_loc[1]: self.sub_img_loc[1] + self.dim[1]])
+                else:
+                    X[i] = cv2.resize(img, self.dim)
+                    Y[i] = np.atleast_3d(cv2.resize(mask, self.dim, interpolation=cv2.INTER_NEAREST))
 
         return X, Y
 
