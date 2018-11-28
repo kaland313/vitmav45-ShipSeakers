@@ -3,30 +3,30 @@ device_type: "CPU"
 memory_limit: 268435456
 locality {
 }
-incarnation: 7581928143346098137
+incarnation: 5346774504399559594
 , name: "/device:XLA_GPU:0"
 device_type: "XLA_GPU"
 memory_limit: 17179869184
 locality {
 }
-incarnation: 7485840959657677201
+incarnation: 2182439020241261897
 physical_device_desc: "device: XLA_GPU device"
 , name: "/device:XLA_CPU:0"
 device_type: "XLA_CPU"
 memory_limit: 17179869184
 locality {
 }
-incarnation: 3555576410649698940
+incarnation: 2324586260068739675
 physical_device_desc: "device: XLA_CPU device"
 , name: "/device:GPU:0"
 device_type: "GPU"
-memory_limit: 11281553818
+memory_limit: 4944232448
 locality {
   bus_id: 1
   links {
   }
 }
-incarnation: 3360714136804955152
+incarnation: 3961003339443727101
 physical_device_desc: "device: 0, name: Tesla K80, pci bus id: 0000:00:1e.0, compute capability: 3.7"
 ]
 
@@ -73,102 +73,56 @@ conv2d_8 (Conv2D)               (None, None, None, 5 2359808     batch_normaliza
 __________________________________________________________________________________________________
 batch_normalization_8 (BatchNor (None, None, None, 5 2048        conv2d_8[0][0]                   
 __________________________________________________________________________________________________
-max_pooling2d_4 (MaxPooling2D)  (None, None, None, 5 0           batch_normalization_8[0][0]      
+up_sampling2d_1 (UpSampling2D)  (None, None, None, 5 0           batch_normalization_8[0][0]      
 __________________________________________________________________________________________________
-conv2d_9 (Conv2D)               (None, None, None, 1 4719616     max_pooling2d_4[0][0]            
-__________________________________________________________________________________________________
-batch_normalization_9 (BatchNor (None, None, None, 1 4096        conv2d_9[0][0]                   
-__________________________________________________________________________________________________
-conv2d_10 (Conv2D)              (None, None, None, 1 9438208     batch_normalization_9[0][0]      
-__________________________________________________________________________________________________
-batch_normalization_10 (BatchNo (None, None, None, 1 4096        conv2d_10[0][0]                  
-__________________________________________________________________________________________________
-up_sampling2d_1 (UpSampling2D)  (None, None, None, 1 0           batch_normalization_10[0][0]     
-__________________________________________________________________________________________________
-concatenate_1 (Concatenate)     (None, None, None, 1 0           batch_normalization_8[0][0]      
+concatenate_1 (Concatenate)     (None, None, None, 7 0           batch_normalization_6[0][0]      
                                                                  up_sampling2d_1[0][0]            
 __________________________________________________________________________________________________
-conv2d_11 (Conv2D)              (None, None, None, 5 7078400     concatenate_1[0][0]              
+conv2d_9 (Conv2D)               (None, None, None, 2 1769728     concatenate_1[0][0]              
 __________________________________________________________________________________________________
-batch_normalization_11 (BatchNo (None, None, None, 5 2048        conv2d_11[0][0]                  
+batch_normalization_9 (BatchNor (None, None, None, 2 1024        conv2d_9[0][0]                   
 __________________________________________________________________________________________________
-conv2d_12 (Conv2D)              (None, None, None, 5 2359808     batch_normalization_11[0][0]     
+conv2d_10 (Conv2D)              (None, None, None, 2 590080      batch_normalization_9[0][0]      
 __________________________________________________________________________________________________
-batch_normalization_12 (BatchNo (None, None, None, 5 2048        conv2d_12[0][0]                  
+batch_normalization_10 (BatchNo (None, None, None, 2 1024        conv2d_10[0][0]                  
 __________________________________________________________________________________________________
-up_sampling2d_2 (UpSampling2D)  (None, None, None, 5 0           batch_normalization_12[0][0]     
+up_sampling2d_2 (UpSampling2D)  (None, None, None, 2 0           batch_normalization_10[0][0]     
 __________________________________________________________________________________________________
-concatenate_2 (Concatenate)     (None, None, None, 7 0           batch_normalization_6[0][0]      
+concatenate_2 (Concatenate)     (None, None, None, 3 0           batch_normalization_4[0][0]      
                                                                  up_sampling2d_2[0][0]            
 __________________________________________________________________________________________________
-conv2d_13 (Conv2D)              (None, None, None, 2 1769728     concatenate_2[0][0]              
+conv2d_11 (Conv2D)              (None, None, None, 1 442496      concatenate_2[0][0]              
 __________________________________________________________________________________________________
-batch_normalization_13 (BatchNo (None, None, None, 2 1024        conv2d_13[0][0]                  
+batch_normalization_11 (BatchNo (None, None, None, 1 512         conv2d_11[0][0]                  
 __________________________________________________________________________________________________
-conv2d_14 (Conv2D)              (None, None, None, 2 590080      batch_normalization_13[0][0]     
+conv2d_12 (Conv2D)              (None, None, None, 1 147584      batch_normalization_11[0][0]     
 __________________________________________________________________________________________________
-batch_normalization_14 (BatchNo (None, None, None, 2 1024        conv2d_14[0][0]                  
+batch_normalization_12 (BatchNo (None, None, None, 1 512         conv2d_12[0][0]                  
 __________________________________________________________________________________________________
-up_sampling2d_3 (UpSampling2D)  (None, None, None, 2 0           batch_normalization_14[0][0]     
+up_sampling2d_3 (UpSampling2D)  (None, None, None, 1 0           batch_normalization_12[0][0]     
 __________________________________________________________________________________________________
-concatenate_3 (Concatenate)     (None, None, None, 3 0           batch_normalization_4[0][0]      
+concatenate_3 (Concatenate)     (None, None, None, 1 0           batch_normalization_2[0][0]      
                                                                  up_sampling2d_3[0][0]            
 __________________________________________________________________________________________________
-conv2d_15 (Conv2D)              (None, None, None, 1 442496      concatenate_3[0][0]              
+conv2d_13 (Conv2D)              (None, None, None, 6 110656      concatenate_3[0][0]              
 __________________________________________________________________________________________________
-batch_normalization_15 (BatchNo (None, None, None, 1 512         conv2d_15[0][0]                  
+batch_normalization_13 (BatchNo (None, None, None, 6 256         conv2d_13[0][0]                  
 __________________________________________________________________________________________________
-conv2d_16 (Conv2D)              (None, None, None, 1 147584      batch_normalization_15[0][0]     
+conv2d_14 (Conv2D)              (None, None, None, 6 36928       batch_normalization_13[0][0]     
 __________________________________________________________________________________________________
-batch_normalization_16 (BatchNo (None, None, None, 1 512         conv2d_16[0][0]                  
+batch_normalization_14 (BatchNo (None, None, None, 6 256         conv2d_14[0][0]                  
 __________________________________________________________________________________________________
-up_sampling2d_4 (UpSampling2D)  (None, None, None, 1 0           batch_normalization_16[0][0]     
-__________________________________________________________________________________________________
-concatenate_4 (Concatenate)     (None, None, None, 1 0           batch_normalization_2[0][0]      
-                                                                 up_sampling2d_4[0][0]            
-__________________________________________________________________________________________________
-conv2d_17 (Conv2D)              (None, None, None, 6 110656      concatenate_4[0][0]              
-__________________________________________________________________________________________________
-batch_normalization_17 (BatchNo (None, None, None, 6 256         conv2d_17[0][0]                  
-__________________________________________________________________________________________________
-conv2d_18 (Conv2D)              (None, None, None, 6 36928       batch_normalization_17[0][0]     
-__________________________________________________________________________________________________
-batch_normalization_18 (BatchNo (None, None, None, 6 256         conv2d_18[0][0]                  
-__________________________________________________________________________________________________
-conv2d_19 (Conv2D)              (None, None, None, 1 65          batch_normalization_18[0][0]     
+conv2d_15 (Conv2D)              (None, None, None, 1 65          batch_normalization_14[0][0]     
 ==================================================================================================
-Total params: 31,402,497
-Trainable params: 31,390,721
-Non-trainable params: 11,776
+Total params: 7,794,177
+Trainable params: 7,788,545
+Non-trainable params: 5,632
 __________________________________________________________________________________________________
 
 
-epoch: 0	loss: 0.483972283304	val_loss: 0.306463279724
-epoch: 1	loss: 0.135599536523	val_loss: 0.0703278060257
-epoch: 2	loss: 0.0408744980581	val_loss: 0.0398978459835
-epoch: 3	loss: 0.026868257653	val_loss: 0.0207800039649
-epoch: 4	loss: 0.0165782881249	val_loss: 0.0202244865336
-epoch: 5	loss: 0.0172883773874	val_loss: 0.0275469523575
-epoch: 6	loss: 0.0115387222357	val_loss: 0.0153899655212
-epoch: 7	loss: 0.0138782492164	val_loss: 0.0116747217905
-epoch: 8	loss: 0.0184747347375	val_loss: 0.0045191180706
-epoch: 9	loss: 0.0142925548833	val_loss: 0.0215865696687
-epoch: 10	loss: 0.01242077142	val_loss: 0.0191028565913
-epoch: 11	loss: 0.0113640590431	val_loss: 0.00429860588629
-epoch: 12	loss: 0.0113395763095	val_loss: 0.024414846194
-epoch: 13	loss: 0.0115967778803	val_loss: 0.0263395866938
-epoch: 14	loss: 0.00913642882369	val_loss: 0.00532266369089
-epoch: 15	loss: 0.0109520061093	val_loss: 0.0114314647811
-epoch: 16	loss: 0.0123563098779	val_loss: 0.011591811541
-epoch: 17	loss: 0.0106785303168	val_loss: 0.0364919560961
-epoch: 18	loss: 0.0116063030611	val_loss: 0.00924738834612
-epoch: 19	loss: 0.00912821253645	val_loss: 0.0103918117099
-epoch: 20	loss: 0.0102297288051	val_loss: 0.0174152730289
-epoch: 21	loss: 0.0108450326428	val_loss: 0.0125909257354
-epoch: 0	loss: 0.0101178919896	val_loss: 0.0123859614879
-epoch: 1	loss: 0.0109106430411	val_loss: 0.00674799601082
-epoch: 2	loss: 0.0105953048366	val_loss: 0.0112175180204
-epoch: 3	loss: 0.0126325633486	val_loss: 0.0071371646598
-epoch: 4	loss: 0.0106061032136	val_loss: 0.0266337360535
-epoch: 5	loss: 0.0125161541777	val_loss: 0.0104664828302
-epoch: 6	loss: 0.0114291281666	val_loss: 0.0217826175783
+epoch: 0	loss: -0.00367912683313	val_loss: -0.00318594858054
+epoch: 1	loss: -0.00377768045765	val_loss: -0.00264566945989
+epoch: 2	loss: -0.00289792963461	val_loss: -0.0036535244995
+epoch: 3	loss: -0.00269511284877	val_loss: -0.00854817722058
+epoch: 4	loss: -0.00326045904373	val_loss: -0.00413953762677
+epoch: 5	loss: -0.00276258797334	val_loss: -0.00502006906296

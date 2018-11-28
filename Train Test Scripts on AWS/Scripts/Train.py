@@ -210,9 +210,9 @@ def Unet(input_layer):
     x, residual_connection = Unet_encoder_layer(x, kernel, filter_size, pool_size)
     residual_connections.append(residual_connection)
 
-    filter_size *= 2
-    x, residual_connection = Unet_encoder_layer(x, kernel, filter_size, pool_size)
-    residual_connections.append(residual_connection)
+#    filter_size *= 2
+#    x, residual_connection = Unet_encoder_layer(x, kernel, filter_size, pool_size)
+#    residual_connections.append(residual_connection)
 
     filter_size *= 2
     x = Conv2D(filter_size, kernel, padding='same', activation='relu')(x)
@@ -220,9 +220,9 @@ def Unet(input_layer):
     x = Conv2D(filter_size, kernel, padding='same', activation='relu')(x)
     x = BatchNormalization()(x)
 
-    filter_size /= 2
-    x = Unet_decoder_layer(x, kernel, filter_size, pool_size, residual_connections[-1])
-    residual_connections = residual_connections[:-1]
+#    filter_size /= 2
+#    x = Unet_decoder_layer(x, kernel, filter_size, pool_size, residual_connections[-1])
+#    residual_connections = residual_connections[:-1]
 
     filter_size /= 2
     x = Unet_decoder_layer(x, kernel, filter_size, pool_size, residual_connections[-1])
@@ -247,20 +247,20 @@ input_layer = Input((None, None, 3))
 output_layer = Unet(input_layer)
 
 model = load_model("model.hdf5", custom_objects={'dice_coef_loss': dice_coef_loss})
-#model = Model(inputs=input_layer, outputs=output_layer)
+# model = Model(inputs=input_layer, outputs=output_layer)
 
 # opt = SGD(lr=1e-3, decay=1e-6, momentum=0.9, nesterov=True)
-model.compile(optimizer='adam', loss='binary_crossentropy')
+model.compile(optimizer='adam', loss=dice_coef_loss)
 print(model.summary())
 
 f = open('Training history.txt', 'a')
-#f = open('Training history.txt', 'w')
-#f.write(str(device_lib.list_local_devices()))
-#f.write("\n\n")
-#model.summary(print_fn=lambda x: f.write(x + '\n'))
-#f.write("\n\n")
+# f = open('Training history.txt', 'w')
+# f.write(str(device_lib.list_local_devices()))
+# f.write("\n\n")
+# model.summary(print_fn=lambda x: f.write(x + '\n'))
+# f.write("\n\n")
 
-#plot_model(model, to_file='model.png', show_shapes=True)
+# plot_model(model, to_file='model.png', show_shapes=True)
 
 ########################################################################################################################
 # Train the network
