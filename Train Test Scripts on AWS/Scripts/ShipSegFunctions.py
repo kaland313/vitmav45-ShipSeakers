@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import imageio
 import cv2
+from tqdm import tqdm
 
 from keras.applications import imagenet_utils
 from keras.utils import Sequence
@@ -102,6 +103,11 @@ class DataGenerator(Sequence):
         # shuffle the data on after each epoch so data is split into different batches in every epoch
         self.shuffle_on_every_epoch = shuffle_on_every_epoch
         self.indexes = np.arange(len(self.list_IDs))  # initialize the self.indexes variable
+        
+        # self.imgs = np.empty((8000, *self.dim, self.n_channels),dtype=np.uint8)
+        # self.masks = np.empty((len(self.list_IDs), *self.dim, 1))
+        # for idx, imgID in enumerate(tqdm(list_IDs)):
+            # self.imgs[idx] = read_transform_image(self.img_prefix + "/" + imgID)
 
     def on_epoch_end(self):
         # Updates indexes after each epoch'
@@ -153,8 +159,8 @@ class DataGenerator(Sequence):
         # Generates data containing batch_size samples' # X : (n_samples, *dim, n_channels)
         # Initialization
 
-        X = np.empty((self.batch_size, *self.dim, self.n_channels))
-        Y = np.empty((self.batch_size, *self.dim, 1))
+        X = np.empty((self.batch_size, *self.dim, self.n_channels),dtype=np.uint8)
+        Y = np.empty((self.batch_size, *self.dim, 1),dtype=np.uint8)
         # print(X.shape)
         # print(X)
 

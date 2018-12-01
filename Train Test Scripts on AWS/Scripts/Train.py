@@ -6,6 +6,7 @@ import pandas as pd
 from tqdm import tqdm
 # import imageio
 import cv2
+from tqdm import tqdm
 
 from keras.applications import imagenet_utils
 from keras.utils import Sequence
@@ -59,11 +60,11 @@ segmentation_data_file_path = '/data/train_ship_segmentations_v2.csv'
 valid_split = 0.15
 test_split = 0.15
 
-# resize_img_to = (768, 768)
+resize_img_to = (768, 768)
 # resize_img_to = (384, 384)
 # resize_img_to = (256, 256)
-resize_img_to = (192, 192)
-batch_size = 8
+# resize_img_to = (192, 192)
+batch_size = 4
 
 ########################################################################################################################
 # Load and prepare the data
@@ -71,7 +72,8 @@ batch_size = 8
 
 # Load the file which contains the masks for each image
 df_train = pd.read_csv(segmentation_data_file_path)
-
+print(df_train.describe())
+      
 # Look for missing files and remove them from the dataframe
 # import os
 # img_files = os.listdir('../data/train_img')
@@ -89,7 +91,6 @@ np.save("test_img_ids.npy", test_img_ids)
 # Define the generators
 rgb_channels_number = 3
 dimension_of_the_image = resize_img_to
-
 
 training_generator = DataGenerator(
     train_img_ids,
@@ -195,7 +196,7 @@ def Unet_decoder_layer(input_layer,kernel,filter_size,pool_size,residual_connect
 
 def Unet(input_layer):
     kernel = 3
-    filter_size = 64
+    filter_size = 32
     pool_size = 2
     residual_connections = []
 
@@ -206,9 +207,9 @@ def Unet(input_layer):
     x, residual_connection = Unet_encoder_layer(x, kernel, filter_size, pool_size)
     residual_connections.append(residual_connection)
 
-    filter_size *= 2
-    x, residual_connection = Unet_encoder_layer(x, kernel, filter_size, pool_size)
-    residual_connections.append(residual_connection)
+    # filter_size *= 2
+    # x, residual_connection = Unet_encoder_layer(x, kernel, filter_size, pool_size)
+    # residual_connections.append(residual_connection)
 
 #    filter_size *= 2
 #    x, residual_connection = Unet_encoder_layer(x, kernel, filter_size, pool_size)
@@ -224,9 +225,9 @@ def Unet(input_layer):
 #    x = Unet_decoder_layer(x, kernel, filter_size, pool_size, residual_connections[-1])
 #    residual_connections = residual_connections[:-1]
 
-    filter_size /= 2
-    x = Unet_decoder_layer(x, kernel, filter_size, pool_size, residual_connections[-1])
-    residual_connections = residual_connections[:-1]
+    # filter_size /= 2
+    # x = Unet_decoder_layer(x, kernel, filter_size, pool_size, residual_connections[-1])
+    # residual_connections = residual_connections[:-1]
 
     filter_size /= 2
     x = Unet_decoder_layer(x, kernel, filter_size, pool_size, residual_connections[-1])
@@ -246,11 +247,11 @@ def Unet(input_layer):
 input_layer = Input((None, None, 3))
 output_layer = Unet(input_layer)
 
-model = load_model("model.hdf5", custom_objects={'dice_coef_loss': dice_coef_loss})
-# model = Model(inputs=input_layer, outputs=output_layer)
+# model = load_model("model.hdf5", custom_objects={'dice_coef_loss': dice_coef_loss})
+model = Model(inputs=input_layer, outputs=output_layer)
 
 # opt = SGD(lr=1e-3, decay=1e-6, momentum=0.9, nesterov=True)
-model.compile(optimizer='adam', loss=dice_coef_loss)
+model.compile(optimizer=Adam(lr=1e-2), loss='binary_crossentropy', metrics=[dice_coef])
 print(model.summary())
 
 f = open('Training history.txt', 'a')
@@ -259,6 +260,7 @@ f = open('Training history.txt', 'a')
 # f.write("\n\n")
 # model.summary(print_fn=lambda x: f.write(x + '\n'))
 # f.write("\n\n")
+f.write('epoch: ' + '\tloss: ' + '\tval_loss: ' + '\tacc: ' + '\tval_acc: ' + '\n'),
 
 # plot_model(model, to_file='model.png', show_shapes=True)
 
@@ -267,18 +269,26 @@ f = open('Training history.txt', 'a')
 ########################################################################################################################
 early_stopping = EarlyStopping(patience=10, verbose=1)
 checkpoint = ModelCheckpoint(filepath='model.hdf5', save_best_only=True, verbose=1)
-logger = LambdaCallback(on_epoch_end=lambda epoch, logs: f.write('epoch: ' + str(epoch) +
-                                                                 '\tloss: ' + str(logs['loss']) +
-                                                                 '\tval_loss: ' + str(logs['val_loss']) +
+# logger = LambdaCallback(on_epoch_end=lambda epoch, logs: f.write('epoch: ' + str(epoch) +
+#                                                                  '\tloss: ' + str(logs['loss']) +
+#                                                                  '\tval_loss: ' + str(logs['val_loss']) +
+#                                                                  '\n'),
+#                         on_train_end=lambda logs: f.close())
+
+logger = LambdaCallback(on_epoch_end=lambda epoch, logs: f.write(str(epoch) +'\t'
+                                                                 + str(logs['loss']) +'\t' 
+                                                                 + str(logs['val_loss']) + '\t'
+                                                                 + str(logs['dice_coef']) +'\t' 
+                                                                 + str(logs['val_dice_coef']) +
                                                                  '\n'),
                         on_train_end=lambda logs: f.close())
 
 history = model.fit_generator(generator=training_generator,
-                              steps_per_epoch=1000,
+                              steps_per_epoch=100,
                               epochs=1000,
                               validation_data=validation_generator,
                               validation_steps=len(validation_generator),
                               callbacks=[checkpoint, early_stopping, logger],
                               verbose=1)
 
-np.save("training_history.npy", history)
+# np.save("training_history.npy", history)
