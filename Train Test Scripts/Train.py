@@ -91,6 +91,10 @@ exclude_list = ['6384c3e78.jpg', '13703f040.jpg', '14715c06d.jpg', '33e0ff2d5.jp
 for imgId in exclude_list:
     df_train = df_train[~(df_train['ImageId'] == imgId)]
 
+# Drop images without ships
+df_train = df_train[~df_train['EncodedPixels'].isnull()]
+
+print(df_train.describe())
 # Split the data
 train_img_ids, valid_img_ids, test_img_ids = separate(df_train['ImageId'].values, valid_split, test_split)
 np.save("test_img_ids.npy", test_img_ids)
