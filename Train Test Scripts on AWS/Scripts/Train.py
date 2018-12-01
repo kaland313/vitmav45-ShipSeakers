@@ -102,9 +102,6 @@ train_img_ids, valid_img_ids, test_img_ids = separate(df_train['ImageId'].values
 np.save("test_img_ids.npy", test_img_ids)
 np.save("valid_img_ids.npy", valid_img_ids)
 np.save("train_img_ids.npy", train_img_ids)
-print(train_img_ids)
-
-exit()
 
 # Define the generators
 training_generator = DataGenerator(
@@ -113,7 +110,7 @@ training_generator = DataGenerator(
     image_path,
     batch_size=batch_size,
     dim=resize_img_to,
-    split_to_sub_img = False
+    split_to_sub_img = True
 )
 
 validation_generator = DataGenerator(
@@ -122,7 +119,7 @@ validation_generator = DataGenerator(
     image_path,
     batch_size=batch_size,
     dim=resize_img_to,
-    split_to_sub_img = False,
+    split_to_sub_img = True,
     forced_len = 25
 )
 
@@ -234,7 +231,7 @@ plot_model(model, to_file='model.png', show_shapes=True)
 ########################################################################################################################
 early_stopping = EarlyStopping(patience=15, verbose=1)
 checkpoint = ModelCheckpoint(filepath='model.hdf5', save_best_only=True, verbose=1)
-csv_logger = CSVLogger('Training log.csv')
+csv_logger = CSVLogger('Training log.csv', separator=';',append=True)
 logger = LambdaCallback(on_epoch_end=lambda epoch, logs: f.write(str(epoch) +'\t'
                                                                  + str(logs['loss']) +'\t'
                                                                  + str(logs['val_loss']) + '\t'
