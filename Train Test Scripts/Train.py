@@ -20,7 +20,7 @@ from keras.layers.core import Dense, Dropout, Activation, Flatten, Reshape, Perm
 from keras.layers.convolutional import Conv2D, MaxPooling2D, UpSampling2D, ZeroPadding2D
 from keras.layers.normalization import BatchNormalization
 from keras.layers import Concatenate
-from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau, LambdaCallback
+from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau, LambdaCallback, CSVLogger
 from keras.optimizers import SGD, Adam
 
 ########################################################################################################################
@@ -223,6 +223,7 @@ f.write(str(device_lib.list_local_devices()))
 f.write("\n\n")
 model.summary(print_fn=lambda x: f.write(x + '\n'))
 f.write("\n\n")
+f.write('epoch: ' + '\tloss: ' + '\tval_loss: ' + '\tacc: ' + '\tval_acc: ' + '\n')
 
 plot_model(model, to_file='model.png', show_shapes=True)
 
@@ -231,18 +232,19 @@ plot_model(model, to_file='model.png', show_shapes=True)
 ########################################################################################################################
 early_stopping = EarlyStopping(patience=10, verbose=1)
 checkpoint = ModelCheckpoint(filepath='model.hdf5', save_best_only=True, verbose=1)
-logger = LambdaCallback(on_epoch_end=lambda epoch, logs: f.write('epoch: ' + str(epoch) +
-                                                                 '\tloss: ' + str(logs['loss']) +
-                                                                 '\tval_loss: ' + str(logs['val_loss']) +
-                                                                 '\n'),
+csv_logger = CSVLogger('training_log.csv')
+logger = LambdaCallback(on_epoch_end=lambda epoch, logs: f.write(str(epoch) +'\t'
+                                                                 + str(logs['loss']) +'\t'
+                                                                 + str(logs['val_loss']) + '\t'
+                                                                 + '\n'),
                         on_train_end=lambda logs: f.close())
 
 history = model.fit_generator(generator=training_generator,
                               steps_per_epoch=100,
-                              epochs=1000,
+                              epochs=100,
                               validation_data=validation_generator,
                               validation_steps=len(validation_generator),
-                              callbacks=[checkpoint, early_stopping, logger],
+                              callbacks=[checkpoint, early_stopping, logger, csv_logger],
                               verbose=1)
 
 np.save("training_history.npy", history)
