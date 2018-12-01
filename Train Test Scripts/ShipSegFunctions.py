@@ -41,7 +41,7 @@ def read_transform_image(img_file_path):
     return preprocess_input(img)
 
 
-def separate(data, valid_split=0.2, test_split=0., shuffle=True):
+def separate(data, valid_split=0.2, test_split=0.):
     """
     Separate the dataset into 3 different part. Train, validation and test.
     train_data and test_data sets are 1D numpy arrays.
@@ -50,9 +50,6 @@ def separate(data, valid_split=0.2, test_split=0., shuffle=True):
     """
 
     sum_ = data.shape[0]
-
-    if shuffle:
-        np.random.shuffle(data)
 
     train = data[:int(sum_ * (1 - valid_split - test_split))]
     valid = data[int(sum_ * (1 - valid_split - test_split)):int(sum_ * (1 - test_split))]

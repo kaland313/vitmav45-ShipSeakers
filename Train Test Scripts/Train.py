@@ -82,7 +82,7 @@ df_train = pd.read_csv(segmentation_data_file_path)
 # df_train = df_train.reset_index(drop=True)
 
 # Split the data
-train_img_ids, valid_img_ids, test_img_ids = separate(df_train['ImageId'].values, valid_split, test_split, shuffle=True)
+train_img_ids, valid_img_ids, test_img_ids = separate(df_train['ImageId'].values, valid_split, test_split)
 np.save("test_img_ids.npy", test_img_ids)
 
 # Define the generators
