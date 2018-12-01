@@ -47,11 +47,11 @@ print(device_lib.list_local_devices())
 # PARAMETERS
 ########################################################################################################################
 # Data on AWS
-image_path = "/data/train_v2"
-segmentation_data_file_path = '/data/train_ship_segmentations_v2.csv'
+# image_path = "/data/train_v2"
+# segmentation_data_file_path = '/data/train_ship_segmentations_v2.csv'
 # Data locally
-# image_path = "/run/media/kalap/Storage/Deep learning 2/train_v2"
-# segmentation_data_file_path = '/run/media/kalap/Storage/Deep learning 2/train_ship_segmentations_v2.csv'
+image_path = "/run/media/kalap/Storage/Deep learning 2/train_v2"
+segmentation_data_file_path = '/run/media/kalap/Storage/Deep learning 2/train_ship_segmentations_v2.csv'
 # Data on Github
 # image_path = "../data/train_img"
 # segmentation_data_file_path = '../data/train_ship_segmentations_v2.csv'
@@ -59,9 +59,10 @@ segmentation_data_file_path = '/data/train_ship_segmentations_v2.csv'
 valid_split = 0.15
 test_split = 0.15
 
-# resize_img_to = (768, 768)
+resize_img_to = (768, 768)
 # resize_img_to = (384, 384)
-resize_img_to = (192, 192)
+# resize_img_to = (256, 256)
+# resize_img_to = (192, 192)
 batch_size = 4
 
 ########################################################################################################################
@@ -105,7 +106,7 @@ training_generator = DataGenerator(
     image_path,
     batch_size=batch_size,
     dim=dimension_of_the_image,
-    n_channels=rgb_channels_number
+    split_to_sub_img = False
 )
 
 validation_generator = DataGenerator(
@@ -114,72 +115,23 @@ validation_generator = DataGenerator(
     image_path,
     batch_size=batch_size,
     dim=dimension_of_the_image,
-    n_channels=rgb_channels_number,
+    split_to_sub_img = False,
     forced_len = 25
 )
 
 # # Test the generators
-# for iii in range(26):
-#     gen_img, gen_mask = training_generator.__getitem__(0)
-#     # print(gen_img.shape, gen_mask.shape)
-#     disp_image_with_map(gen_img[0], gen_mask[0])
-#     training_generator.on_epoch_end()
+
+gen_img, gen_mask  = training_generator.__getitem__(0)
+gen_ids = training_generator.get_last_batch_ImageIDs()
+for iii in range(4):
+    # print(gen_img.shape, gen_mask.shape)
+    disp_image_with_map(gen_img[iii], gen_mask[iii], gen_ids[iii])
+    # training_generator.on_epoch_end()
 
 
 ########################################################################################################################
 # Model definition
 ########################################################################################################################
-def SegNet(input_layer):
-    kernel = 3
-    filter_size = 64
-    pool_size = 2
-    residual_connections = []
-
-    x = Conv2D(filter_size, kernel, padding='same')(input_layer)
-    x = BatchNormalization()(x)
-    x = Activation('relu')(x)
-    x = MaxPooling2D(pool_size=(pool_size, pool_size))(x)
-    residual_connections.append(x)
-
-    x = Conv2D(128, kernel, padding='same')(x)
-    x = BatchNormalization()(x)
-    x = Activation('relu')(x)
-    x = MaxPooling2D(pool_size=(pool_size, pool_size))(x)
-    residual_connections.append(x)
-
-    x = Conv2D(256, kernel, padding='same')(x)
-    x = BatchNormalization()(x)
-    x = Activation('relu')(x)
-    x = MaxPooling2D(pool_size=(pool_size, pool_size))(x)
-    residual_connections.append(x)
-
-    x = Conv2D(512, kernel, padding='same')(x)
-    x = BatchNormalization()(x)
-    x = Activation('relu')(x)
-
-    x = Conv2D(512, kernel, padding='same')(x)
-    x = BatchNormalization()(x)
-    x = Concatenate()([x, residual_connections[2]])
-
-    x = UpSampling2D(size=(pool_size,pool_size))(x)
-    x = Conv2D(256, kernel, padding='same')(x)
-    x = BatchNormalization()(x)
-    x = Concatenate()([x, residual_connections[1]])
-
-    x = UpSampling2D(size=(pool_size,pool_size))(x)
-    x = Conv2D(128, kernel, padding='same')(x)
-    x = BatchNormalization()(x)
-    x = Concatenate()([x, residual_connections[0]])
-
-    x = UpSampling2D(size=(pool_size,pool_size))(x)
-    x = Conv2D(filter_size, kernel, padding='same')(x)
-    x = BatchNormalization()(x)
-
-    final_layer = Conv2D(1, 1, padding='same', activation='sigmoid')(x)
-
-    return final_layer
-
-
 def Unet_encoder_layer(input_layer,kernel,filter_size,pool_size):
     x = Conv2D(filter_size, kernel, padding='same', activation='relu')(input_layer)
     x = BatchNormalization()(x)

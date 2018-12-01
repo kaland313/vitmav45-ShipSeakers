@@ -80,7 +80,7 @@ def rle_decode(mask_rle, shape=(768, 768)):
     return mask.reshape(shape).T  # Needed to align to RLE direction
 
 
-def disp_image_with_map(img_matrix, mask_matrix):
+def disp_image_with_map(img_matrix, mask_matrix, img_id=""):
     """
     Displays the image image with the mask layed on top of it. Yellow highlight indicates the ships.
     my_cmap is a color map which is transparent at one end it.
@@ -88,10 +88,11 @@ def disp_image_with_map(img_matrix, mask_matrix):
     plt.imshow(img_matrix*0.5+0.5)
     plt.imshow(mask_matrix[:, :, 0], alpha=0.5, cmap=my_cmap)
     plt.axis('off')
+    plt.title(img_id)
     plt.show()
 
 
-def disp_image_with_map2(img_matrix, mask_matrix_true, mask_matrix_pred):
+def disp_image_with_map2(img_matrix, mask_matrix_true, mask_matrix_pred, img_id=""):
     """
     Displays the image, the ground truth map and the predicted map
     """
@@ -100,7 +101,7 @@ def disp_image_with_map2(img_matrix, mask_matrix_true, mask_matrix_pred):
     plt.imshow(img_matrix * 0.5 + 0.5)
     plt.xticks([], "")
     plt.yticks([], "")
-    plt.title("Image")
+    plt.title("Image " + img_id)
 
     plt.subplot(1, 3, 2)
     plt.imshow(mask_matrix_true[:, :, 0], cmap='Greys')
@@ -147,17 +148,16 @@ class DataGenerator(Sequence):
         #  Due to the 50% overlap of the number of sub images per whole image is:
         self.sub_img_count = int((768.0/dim[0]))**2 + int(((768.0/dim[0])-1))**2
         self.sub_img_idx = 0
-        self.sub_img_loc = [0,0]
+        self.sub_img_loc = [0, 0]
 
         # shuffle the data on after each epoch so data is split into different batches in every epoch
         self.shuffle_on_every_epoch = shuffle_on_every_epoch
-        self.indexes = np.arange(len(self.list_IDs))  # initialize the self.indexes variable
+        self.shuffle_data()
+
+        self.list_IDs_temp = []
 
     def on_epoch_end(self):
-        # Updates indexes after each epoch'
-        self.indexes = np.arange(len(self.list_IDs))
-        if self.shuffle_on_every_epoch:
-            np.random.shuffle(self.indexes)
+        self.shuffle_data()
 
         self.sub_img_idx = (self.sub_img_idx + 1) % self.sub_img_count
 
@@ -179,8 +179,13 @@ class DataGenerator(Sequence):
                 # restart from the first corner
                 self.sub_img_loc = [0, 0]
 
-        print(self.sub_img_loc, self.sub_img_idx)
+        # print(self.sub_img_loc, self.sub_img_idx)
 
+    def shuffle_data(self):
+        # Updates indexes after each epoch'
+        self.indexes = np.arange(len(self.list_IDs))
+        if self.shuffle_on_every_epoch:
+            np.random.shuffle(self.indexes)
 
     def __len__(self):
         # Denotes the number of batches per epoch'
@@ -195,12 +200,14 @@ class DataGenerator(Sequence):
         indexes = self.indexes[index * self.batch_size:(index + 1) * self.batch_size]
 
         # Find list of IDs
-        list_IDs_temp = [self.list_IDs[k] for k in indexes]
+        self.list_IDs_temp = [self.list_IDs[k] for k in indexes]
 
         # Generate data
-        X, Y = self.generate(list_IDs_temp)
-
+        X, Y = self.generate(self.list_IDs_temp)
         return X, Y
+
+    def get_last_batch_ImageIDs(self):
+        return self.list_IDs_temp
 
     def generate(self, tmp_list):
         # Generates data containing batch_size samples' # X : (n_samples, *dim, n_channels)
@@ -220,15 +227,15 @@ class DataGenerator(Sequence):
                 mask += rle_decode(mask_coded)
 
             img = read_transform_image(self.img_prefix + "/" + ID)
-
+            
             # Get sub image or resize
             if self.dim == (768, 768):
                 X[i] = img
                 Y[i] = np.atleast_3d(mask)
             else:
                 if self.split_to_sub_img:
-                    X[i] = img[self.sub_img_loc[0] : self.sub_img_loc[0]+self.dim[0],
-                               self.sub_img_loc[1] : self.sub_img_loc[1] + self.dim[1]]
+                    X[i] = img[self.sub_img_loc[0]: self.sub_img_loc[0]+self.dim[0],
+                               self.sub_img_loc[1]: self.sub_img_loc[1] + self.dim[1]]
                     Y[i] = np.atleast_3d(mask[self.sub_img_loc[0]: self.sub_img_loc[0] + self.dim[0],
                                               self.sub_img_loc[1]: self.sub_img_loc[1] + self.dim[1]])
                 else:
