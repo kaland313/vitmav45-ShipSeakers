@@ -231,7 +231,7 @@ plot_model(model, to_file='model.png', show_shapes=True)
 ########################################################################################################################
 early_stopping = EarlyStopping(patience=10, verbose=1)
 checkpoint = ModelCheckpoint(filepath='model.hdf5', save_best_only=True, verbose=1)
-csv_logger = CSVLogger('Training log.csv')
+csv_logger = CSVLogger('Training log.csv', separator=';',append=True)
 logger = LambdaCallback(on_epoch_end=lambda epoch, logs: f.write(str(epoch) +'\t'
                                                                  + str(logs['loss']) +'\t'
                                                                  + str(logs['val_loss']) + '\t'
