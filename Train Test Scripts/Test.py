@@ -23,15 +23,14 @@ from ShipSegFunctions import *
 
 ########################################################################################################################
 # GPU info
-########################################################################################################################
+########################################################################################################################import tensorflow as tf
 import tensorflow as tf
 from keras.backend.tensorflow_backend import set_session
-from tensorflow.python.client import device_lib
-config = tf.ConfigProto()
-config.gpu_options.allow_growth = True
+config = tf.ConfigProto(device_count = {'GPU': 0}) # Use CPU for the testing
+# config.gpu_options.allow_growth = True
 set_session(tf.Session(config=config))
 # Device check
-print(device_lib.list_local_devices())
+# print(device_lib.list_local_devices())
 # print(K.tensorflow_backend._get_available_gpus())
 
 ########################################################################################################################

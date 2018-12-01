@@ -34,7 +34,7 @@ def read_transform_image(img_file_path):
     return preprocess_input(img)
 
 
-def separate(data, valid_split=0.2, test_split=0., shuffle=True):
+def separate(data, valid_split=0.2, test_split=0.):
     """
     Separate the dataset into 3 different part. Train, validation and test.
     train_data and test_data sets are 1D numpy arrays.
@@ -44,15 +44,11 @@ def separate(data, valid_split=0.2, test_split=0., shuffle=True):
 
     sum_ = data.shape[0]
 
-    if shuffle:
-        np.random.shuffle(data)
-
     train = data[:int(sum_ * (1 - valid_split - test_split))]
     valid = data[int(sum_ * (1 - valid_split - test_split)):int(sum_ * (1 - test_split))]
     test = data[int(sum_ * (1 - test_split)):]
 
     return train, valid, test
-
 
 def rle_decode(mask_rle, shape=(768, 768)):
     """
@@ -74,7 +70,6 @@ def rle_decode(mask_rle, shape=(768, 768)):
             mask[lo:hi] = 1
 
     return mask.reshape(shape).T  # Needed to align to RLE direction
-
 
 # Reference: https://stanford.edu/~shervine/blog/keras-how-to-generate-data-on-the-fly
 class DataGenerator(Sequence):
@@ -98,22 +93,16 @@ class DataGenerator(Sequence):
         #  Due to the 50% overlap of the number of sub images per whole image is:
         self.sub_img_count = int((768.0/dim[0]))**2 + int(((768.0/dim[0])-1))**2
         self.sub_img_idx = 0
-        self.sub_img_loc = [0,0]
+        self.sub_img_loc = [0, 0]
 
         # shuffle the data on after each epoch so data is split into different batches in every epoch
         self.shuffle_on_every_epoch = shuffle_on_every_epoch
-        self.indexes = np.arange(len(self.list_IDs))  # initialize the self.indexes variable
-        
-        # self.imgs = np.empty((8000, *self.dim, self.n_channels),dtype=np.uint8)
-        # self.masks = np.empty((len(self.list_IDs), *self.dim, 1))
-        # for idx, imgID in enumerate(tqdm(list_IDs)):
-            # self.imgs[idx] = read_transform_image(self.img_prefix + "/" + imgID)
+        self.shuffle_data()
+
+        self.list_IDs_temp = []
 
     def on_epoch_end(self):
-        # Updates indexes after each epoch'
-        self.indexes = np.arange(len(self.list_IDs))
-        if self.shuffle_on_every_epoch:
-            np.random.shuffle(self.indexes)
+        self.shuffle_data()
 
         self.sub_img_idx = (self.sub_img_idx + 1) % self.sub_img_count
 
@@ -135,6 +124,14 @@ class DataGenerator(Sequence):
                 # restart from the first corner
                 self.sub_img_loc = [0, 0]
 
+        # print(self.sub_img_loc, self.sub_img_idx)
+
+    def shuffle_data(self):
+        # Updates indexes after each epoch'
+        self.indexes = np.arange(len(self.list_IDs))
+        if self.shuffle_on_every_epoch:
+            np.random.shuffle(self.indexes)
+
     def __len__(self):
         # Denotes the number of batches per epoch'
         if self.forced_len == 0:
@@ -148,19 +145,21 @@ class DataGenerator(Sequence):
         indexes = self.indexes[index * self.batch_size:(index + 1) * self.batch_size]
 
         # Find list of IDs
-        list_IDs_temp = [self.list_IDs[k] for k in indexes]
+        self.list_IDs_temp = [self.list_IDs[k] for k in indexes]
 
         # Generate data
-        X, Y = self.generate(list_IDs_temp)
-
+        X, Y = self.generate(self.list_IDs_temp)
         return X, Y
+
+    def get_last_batch_ImageIDs(self):
+        return self.list_IDs_temp
 
     def generate(self, tmp_list):
         # Generates data containing batch_size samples' # X : (n_samples, *dim, n_channels)
         # Initialization
 
-        X = np.empty((self.batch_size, *self.dim, self.n_channels),dtype=np.uint8)
-        Y = np.empty((self.batch_size, *self.dim, 1),dtype=np.uint8)
+        X = np.empty((self.batch_size, *self.dim, self.n_channels))
+        Y = np.empty((self.batch_size, *self.dim, 1))
         # print(X.shape)
         # print(X)
 
@@ -173,15 +172,15 @@ class DataGenerator(Sequence):
                 mask += rle_decode(mask_coded)
 
             img = read_transform_image(self.img_prefix + "/" + ID)
-
+            
             # Get sub image or resize
             if self.dim == (768, 768):
                 X[i] = img
                 Y[i] = np.atleast_3d(mask)
             else:
                 if self.split_to_sub_img:
-                    X[i] = img[self.sub_img_loc[0] : self.sub_img_loc[0]+self.dim[0],
-                               self.sub_img_loc[1] : self.sub_img_loc[1] + self.dim[1]]
+                    X[i] = img[self.sub_img_loc[0]: self.sub_img_loc[0]+self.dim[0],
+                               self.sub_img_loc[1]: self.sub_img_loc[1] + self.dim[1]]
                     Y[i] = np.atleast_3d(mask[self.sub_img_loc[0]: self.sub_img_loc[0] + self.dim[0],
                                               self.sub_img_loc[1]: self.sub_img_loc[1] + self.dim[1]])
                 else:

@@ -1,0 +1,212 @@
+ing TensorFlow backend.
+2018-12-01 19:05:53.451670: I tensorflow/core/platform/cpu_feature_guard.cc:141] Your CPU supports instructions that this TensorFlow binary was not compiled to use: SSE4.1 SSE4.2 AVX AVX2 FMA
+2018-12-01 19:05:57.029272: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:897] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2018-12-01 19:05:57.029677: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1405] Found device 0 with properties:
+name: Tesla K80 major: 3 minor: 7 memoryClockRate(GHz): 0.8235
+pciBusID: 0000:00:1e.0
+totalMemory: 11.17GiB freeMemory: 11.10GiB
+2018-12-01 19:05:57.029732: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1484] Adding visible gpu devices: 0
+2018-12-01 19:06:00.499769: I tensorflow/core/common_runtime/gpu/gpu_device.cc:965] Device interconnect StreamExecutor with strength 1 edge matrix:
+2018-12-01 19:06:00.499817: I tensorflow/core/common_runtime/gpu/gpu_device.cc:971]      0
+2018-12-01 19:06:00.499832: I tensorflow/core/common_runtime/gpu/gpu_device.cc:984] 0:   N
+2018-12-01 19:06:00.501020: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1097] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 10758 MB memory) -> physical GPU (device: 0, name: Tesla K80, pci bus id: 0000:00:1e.0, compute capability: 3.7)
+2018-12-01 19:06:00.504247: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1484] Adding visible gpu devices: 0
+2018-12-01 19:06:00.504282: I tensorflow/core/common_runtime/gpu/gpu_device.cc:965] Device interconnect StreamExecutor with strength 1 edge matrix:
+2018-12-01 19:06:00.504293: I tensorflow/core/common_runtime/gpu/gpu_device.cc:971]      0
+2018-12-01 19:06:00.504299: I tensorflow/core/common_runtime/gpu/gpu_device.cc:984] 0:   N
+2018-12-01 19:06:00.504516: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1097] Created TensorFlow device (/device:GPU:0 with10758 MB memory) -> physical GPU (device: 0, name: Tesla K80, pci bus id: 0000:00:1e.0, compute capability: 3.7)
+[name: "/device:CPU:0"
+device_type: "CPU"
+memory_limit: 268435456
+locality {
+}
+incarnation: 6788389801960579501
+, name: "/device:XLA_GPU:0"
+device_type: "XLA_GPU"
+memory_limit: 17179869184
+locality {
+}
+incarnation: 982813414645327354
+physical_device_desc: "device: XLA_GPU device"
+, name: "/device:XLA_CPU:0"
+device_type: "XLA_CPU"
+memory_limit: 17179869184
+locality {
+}
+incarnation: 12803065805431152567
+physical_device_desc: "device: XLA_CPU device"
+, name: "/device:GPU:0"
+device_type: "GPU"
+memory_limit: 11281491559
+locality {
+  bus_id: 1
+  links {
+  }
+}
+incarnation: 6619647713671979917
+physical_device_desc: "device: 0, name: Tesla K80, pci bus id: 0000:00:1e.0, compute capability: 3.7"
+]
+              ImageId                                      EncodedPixels
+count           81723                                              81723
+unique          42556                                              81722
+top     fd1de824c.jpg  43801 1 44567 4 45334 5 46100 8 46867 9 47636 ...
+freq               15                                                  2
+__________________________________________________________________________________________________
+Layer (type)                    Output Shape         Param #     Connected to
+==================================================================================================
+input_1 (InputLayer)            (None, None, None, 3 0
+__________________________________________________________________________________________________
+conv2d_1 (Conv2D)               (None, None, None, 6 1792        input_1[0][0]
+__________________________________________________________________________________________________
+batch_normalization_1 (BatchNor (None, None, None, 6 256         conv2d_1[0][0]
+__________________________________________________________________________________________________
+conv2d_2 (Conv2D)               (None, None, None, 6 36928       batch_normalization_1[0][0]
+__________________________________________________________________________________________________
+batch_normalization_2 (BatchNor (None, None, None, 6 256         conv2d_2[0][0]
+__________________________________________________________________________________________________
+max_pooling2d_1 (MaxPooling2D)  (None, None, None, 6 0           batch_normalization_2[0][0]
+__________________________________________________________________________________________________
+conv2d_3 (Conv2D)               (None, None, None, 1 73856       max_pooling2d_1[0][0]
+__________________________________________________________________________________________________
+batch_normalization_3 (BatchNor (None, None, None, 1 512         conv2d_3[0][0]
+__________________________________________________________________________________________________
+conv2d_4 (Conv2D)               (None, None, None, 1 147584      batch_normalization_3[0][0]
+__________________________________________________________________________________________________
+batch_normalization_4 (BatchNor (None, None, None, 1 512         conv2d_4[0][0]
+__________________________________________________________________________________________________
+max_pooling2d_2 (MaxPooling2D)  (None, None, None, 1 0           batch_normalization_4[0][0]
+__________________________________________________________________________________________________
+conv2d_5 (Conv2D)               (None, None, None, 2 295168      max_pooling2d_2[0][0]
+__________________________________________________________________________________________________
+batch_normalization_5 (BatchNor (None, None, None, 2 1024        conv2d_5[0][0]
+__________________________________________________________________________________________________
+conv2d_6 (Conv2D)               (None, None, None, 2 590080      batch_normalization_5[0][0]
+__________________________________________________________________________________________________
+batch_normalization_6 (BatchNor (None, None, None, 2 1024        conv2d_6[0][0]
+__________________________________________________________________________________________________
+max_pooling2d_3 (MaxPooling2D)  (None, None, None, 2 0           batch_normalization_6[0][0]
+__________________________________________________________________________________________________
+conv2d_7 (Conv2D)               (None, None, None, 5 1180160     max_pooling2d_3[0][0]
+__________________________________________________________________________________________________
+batch_normalization_7 (BatchNor (None, None, None, 5 2048        conv2d_7[0][0]
+__________________________________________________________________________________________________
+conv2d_8 (Conv2D)               (None, None, None, 5 2359808     batch_normalization_7[0][0]
+__________________________________________________________________________________________________
+batch_normalization_8 (BatchNor (None, None, None, 5 2048        conv2d_8[0][0]
+__________________________________________________________________________________________________
+up_sampling2d_1 (UpSampling2D)  (None, None, None, 5 0           batch_normalization_8[0][0]
+__________________________________________________________________________________________________
+concatenate_1 (Concatenate)     (None, None, None, 7 0           batch_normalization_6[0][0]
+                                                                 up_sampling2d_1[0][0]
+__________________________________________________________________________________________________
+conv2d_9 (Conv2D)               (None, None, None, 2 1769728     concatenate_1[0][0]
+__________________________________________________________________________________________________
+batch_normalization_9 (BatchNor (None, None, None, 2 1024        conv2d_9[0][0]
+__________________________________________________________________________________________________
+conv2d_10 (Conv2D)              (None, None, None, 2 590080      batch_normalization_9[0][0]
+__________________________________________________________________________________________________
+batch_normalization_10 (BatchNo (None, None, None, 2 1024        conv2d_10[0][0]
+__________________________________________________________________________________________________
+up_sampling2d_2 (UpSampling2D)  (None, None, None, 2 0           batch_normalization_10[0][0]
+__________________________________________________________________________________________________
+concatenate_2 (Concatenate)     (None, None, None, 3 0           batch_normalization_4[0][0]
+                                                                 up_sampling2d_2[0][0]
+__________________________________________________________________________________________________
+conv2d_11 (Conv2D)              (None, None, None, 1 442496      concatenate_2[0][0]
+__________________________________________________________________________________________________
+batch_normalization_11 (BatchNo (None, None, None, 1 512         conv2d_11[0][0]
+__________________________________________________________________________________________________
+conv2d_12 (Conv2D)              (None, None, None, 1 147584      batch_normalization_11[0][0]
+__________________________________________________________________________________________________
+batch_normalization_12 (BatchNo (None, None, None, 1 512         conv2d_12[0][0]
+__________________________________________________________________________________________________
+up_sampling2d_3 (UpSampling2D)  (None, None, None, 1 0           batch_normalization_12[0][0]
+__________________________________________________________________________________________________
+concatenate_3 (Concatenate)     (None, None, None, 1 0           batch_normalization_2[0][0]
+                                                                 up_sampling2d_3[0][0]
+__________________________________________________________________________________________________
+conv2d_13 (Conv2D)              (None, None, None, 6 110656      concatenate_3[0][0]
+__________________________________________________________________________________________________
+batch_normalization_13 (BatchNo (None, None, None, 6 256         conv2d_13[0][0]
+__________________________________________________________________________________________________
+conv2d_14 (Conv2D)              (None, None, None, 6 36928       batch_normalization_13[0][0]
+__________________________________________________________________________________________________
+batch_normalization_14 (BatchNo (None, None, None, 6 256         conv2d_14[0][0]
+__________________________________________________________________________________________________
+conv2d_15 (Conv2D)              (None, None, None, 1 65          batch_normalization_14[0][0]
+==================================================================================================
+Total params: 7,794,177
+Trainable params: 7,788,545
+Non-trainable params: 5,632
+__________________________________________________________________________________________________
+None
+2018-12-01 19:06:03.448616: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1484] Adding visible gpu devices: 0
+2018-12-01 19:06:03.448662: I tensorflow/core/common_runtime/gpu/gpu_device.cc:965] Device interconnect StreamExecutor with strength 1 edge matrix:
+2018-12-01 19:06:03.448676: I tensorflow/core/common_runtime/gpu/gpu_device.cc:971]      0
+2018-12-01 19:06:03.448683: I tensorflow/core/common_runtime/gpu/gpu_device.cc:984] 0:   N
+2018-12-01 19:06:03.448924: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1097] Created TensorFlow device (/device:GPU:0 with10758 MB memory) -> physical GPU (device: 0, name: Tesla K80, pci bus id: 0000:00:1e.0, compute capability: 3.7)
+Epoch 1/100
+100/100 [==============================] - 77s 768ms/step - loss: -0.0491 - val_loss: -0.0930
+
+Epoch 00001: val_loss improved from inf to -0.09297, saving model to model.hdf5
+Epoch 2/100
+100/100 [==============================] - 66s 658ms/step - loss: -0.1096 - val_loss: -0.0181
+
+Epoch 00002: val_loss did not improve from -0.09297
+Epoch 3/100
+100/100 [==============================] - 66s 662ms/step - loss: -0.3107 - val_loss: -0.0936
+
+Epoch 00003: val_loss improved from -0.09297 to -0.09359, saving model to model.hdf5
+Epoch 4/100
+100/100 [==============================] - 66s 665ms/step - loss: -0.4208 - val_loss: -0.0070
+
+Epoch 00004: val_loss did not improve from -0.09359
+Epoch 5/100
+100/100 [==============================] - 66s 663ms/step - loss: -0.4341 - val_loss: -0.3851
+
+Epoch 00005: val_loss improved from -0.09359 to -0.38505, saving model to model.hdf5
+Epoch 6/100
+100/100 [==============================] - 67s 665ms/step - loss: -0.4732 - val_loss: -0.4851
+
+Epoch 00006: val_loss improved from -0.38505 to -0.48512, saving model to model.hdf5
+Epoch 7/100
+100/100 [==============================] - 66s 665ms/step - loss: -0.5148 - val_loss: -0.4079
+
+Epoch 00007: val_loss did not improve from -0.48512
+Epoch 8/100
+100/100 [==============================] - 66s 665ms/step - loss: -0.4802 - val_loss: -0.3532
+
+Epoch 00008: val_loss did not improve from -0.48512
+Epoch 9/100
+100/100 [==============================] - 67s 665ms/step - loss: -0.4939 - val_loss: -0.1378
+
+Epoch 00009: val_loss did not improve from -0.48512
+Epoch 10/100
+100/100 [==============================] - 67s 665ms/step - loss: -0.5131 - val_loss: -0.4635
+
+Epoch 00010: val_loss did not improve from -0.48512
+Epoch 11/100
+100/100 [==============================] - 66s 665ms/step - loss: -0.5205 - val_loss: -0.4782
+
+Epoch 00011: val_loss did not improve from -0.48512
+Epoch 12/100
+100/100 [==============================] - 67s 665ms/step - loss: -0.5606 - val_loss: -0.3119
+
+Epoch 00012: val_loss did not improve from -0.48512
+Epoch 13/100
+100/100 [==============================] - 67s 665ms/step - loss: -0.5424 - val_loss: -0.4064
+
+Epoch 00013: val_loss did not improve from -0.48512
+Epoch 14/100
+100/100 [==============================] - 67s 665ms/step - loss: -0.5697 - val_loss: -0.4263
+
+Epoch 00014: val_loss did not improve from -0.48512
+Epoch 15/100
+100/100 [==============================] - 67s 665ms/step - loss: -0.5366 - val_loss: -0.4391
+
+Epoch 00015: val_loss did not improve from -0.48512
+Epoch 16/100
+100/100 [==============================] - 66s 665ms/step - loss: -0.5561 - val_loss: -0.4472
+
+Epoch 00016: val_loss did not improve from -0.48512
+Epoch 00016: early stopping

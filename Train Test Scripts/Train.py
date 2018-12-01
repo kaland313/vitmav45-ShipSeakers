@@ -39,7 +39,7 @@ config = tf.ConfigProto()
 config.gpu_options.allow_growth = True
 set_session(tf.Session(config=config))
 # Device check
-print(device_lib.list_local_devices())
+# print(device_lib.list_local_devices())
 
 # print(K.tensorflow_backend._get_available_gpus())
 
@@ -59,9 +59,9 @@ segmentation_data_file_path = '/run/media/kalap/Storage/Deep learning 2/train_sh
 valid_split = 0.15
 test_split = 0.15
 
-resize_img_to = (768, 768)
+# resize_img_to = (768, 768)
 # resize_img_to = (384, 384)
-# resize_img_to = (256, 256)
+resize_img_to = (256, 256)
 # resize_img_to = (192, 192)
 batch_size = 4
 
@@ -98,18 +98,17 @@ print(df_train.describe())
 # Split the data
 train_img_ids, valid_img_ids, test_img_ids = separate(df_train['ImageId'].values, valid_split, test_split)
 np.save("test_img_ids.npy", test_img_ids)
+np.save("valid_img_ids.npy", valid_img_ids)
+np.save("train_img_ids.npy", train_img_ids)
+print(train_img_ids)
 
 # Define the generators
-rgb_channels_number = 3
-dimension_of_the_image = resize_img_to
-
-
 training_generator = DataGenerator(
     train_img_ids,
     df_train,
     image_path,
     batch_size=batch_size,
-    dim=dimension_of_the_image,
+    dim=resize_img_to,
     split_to_sub_img = False
 )
 
@@ -118,7 +117,7 @@ validation_generator = DataGenerator(
     df_train,
     image_path,
     batch_size=batch_size,
-    dim=dimension_of_the_image,
+    dim=resize_img_to,
     split_to_sub_img = False,
     forced_len = 25
 )
@@ -174,9 +173,9 @@ def Unet(input_layer):
     x, residual_connection = Unet_encoder_layer(x, kernel, filter_size, pool_size)
     residual_connections.append(residual_connection)
 
-    filter_size *= 2
-    x, residual_connection = Unet_encoder_layer(x, kernel, filter_size, pool_size)
-    residual_connections.append(residual_connection)
+    # filter_size *= 2
+    # x, residual_connection = Unet_encoder_layer(x, kernel, filter_size, pool_size)
+    # residual_connections.append(residual_connection)
 
     filter_size *= 2
     x = Conv2D(filter_size, kernel, padding='same', activation='relu')(x)
@@ -184,9 +183,9 @@ def Unet(input_layer):
     x = Conv2D(filter_size, kernel, padding='same', activation='relu')(x)
     x = BatchNormalization()(x)
 
-    filter_size /= 2
-    x = Unet_decoder_layer(x, kernel, filter_size, pool_size, residual_connections[-1])
-    residual_connections = residual_connections[:-1]
+    # filter_size /= 2
+    # x = Unet_decoder_layer(x, kernel, filter_size, pool_size, residual_connections[-1])
+    # residual_connections = residual_connections[:-1]
 
     filter_size /= 2
     x = Unet_decoder_layer(x, kernel, filter_size, pool_size, residual_connections[-1])
@@ -232,7 +231,7 @@ plot_model(model, to_file='model.png', show_shapes=True)
 ########################################################################################################################
 early_stopping = EarlyStopping(patience=10, verbose=1)
 checkpoint = ModelCheckpoint(filepath='model.hdf5', save_best_only=True, verbose=1)
-csv_logger = CSVLogger('training_log.csv')
+csv_logger = CSVLogger('Training log.csv')
 logger = LambdaCallback(on_epoch_end=lambda epoch, logs: f.write(str(epoch) +'\t'
                                                                  + str(logs['loss']) +'\t'
                                                                  + str(logs['val_loss']) + '\t'
@@ -246,5 +245,3 @@ history = model.fit_generator(generator=training_generator,
                               validation_steps=len(validation_generator),
                               callbacks=[checkpoint, early_stopping, logger, csv_logger],
                               verbose=1)
-
-np.save("training_history.npy", history)

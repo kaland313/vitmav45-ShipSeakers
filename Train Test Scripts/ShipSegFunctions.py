@@ -41,7 +41,7 @@ def read_transform_image(img_file_path):
     return preprocess_input(img)
 
 
-def separate(data, valid_split=0.2, test_split=0.):
+def separate(data, valid_split=0.2, test_split=0.2):
     """
     Separate the dataset into 3 different part. Train, validation and test.
     train_data and test_data sets are 1D numpy arrays.
