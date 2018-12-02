@@ -75,7 +75,7 @@ def rle_decode(mask_rle, shape=(768, 768)):
 class DataGenerator(Sequence):
 
     def __init__(self, list_IDs, ship_seg_df, img_path_prefix, batch_size=32, dim=(32, 32), split_to_sub_img=True,
-                 n_channels=3, shuffle_on_every_epoch=True, forced_len=0):
+                 n_channels=3, shuffle_on_every_epoch=True, shuffle_on_init = True, forced_len=0):
         # Initialization
         self.dim = dim  # dataset's dimension
         self.img_prefix = img_path_prefix  # location of the dataset
@@ -97,12 +97,16 @@ class DataGenerator(Sequence):
 
         # shuffle the data on after each epoch so data is split into different batches in every epoch
         self.shuffle_on_every_epoch = shuffle_on_every_epoch
-        self.shuffle_data()
+        if shuffle_on_init:
+            self.shuffle_data()
+        else:
+            self.indexes = np.arange(len(self.list_IDs))
 
         self.list_IDs_temp = []
 
     def on_epoch_end(self):
-        self.shuffle_data()
+        if self.shuffle_on_every_epoch:
+            self.shuffle_data()
 
         self.sub_img_idx = (self.sub_img_idx + 1) % self.sub_img_count
 
@@ -129,8 +133,7 @@ class DataGenerator(Sequence):
     def shuffle_data(self):
         # Updates indexes after each epoch'
         self.indexes = np.arange(len(self.list_IDs))
-        if self.shuffle_on_every_epoch:
-            np.random.shuffle(self.indexes)
+        np.random.shuffle(self.indexes)
 
     def __len__(self):
         # Denotes the number of batches per epoch'

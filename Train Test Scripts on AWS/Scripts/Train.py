@@ -110,7 +110,9 @@ training_generator = DataGenerator(
     image_path,
     batch_size=batch_size,
     dim=resize_img_to,
-    split_to_sub_img = True
+    split_to_sub_img = True,
+    shuffle_on_every_epoch=False,
+    shuffle_on_init = True
 )
 
 validation_generator = DataGenerator(
@@ -209,8 +211,8 @@ def Unet(input_layer):
 input_layer = Input((None, None, 3))
 output_layer = Unet(input_layer)
 
-# model = load_model("model.hdf5", custom_objects={'dice_coef_loss': dice_coef_loss})
-model = Model(inputs=input_layer, outputs=output_layer)
+model = load_model("model.hdf5", custom_objects={'dice_coef_loss': dice_coef_loss})
+# model = Model(inputs=input_layer, outputs=output_layer)
 
 # opt = SGD(lr=1e-3, decay=1e-6, momentum=0.9, nesterov=True)
 model.compile(optimizer='adam', loss=dice_coef_loss)
@@ -222,14 +224,14 @@ f = open('Training history.txt', 'a')
 # f.write("\n\n")
 # model.summary(print_fn=lambda x: f.write(x + '\n'))
 # f.write("\n\n")
-f.write('epoch: ' + '\tloss: ' + '\tval_loss: ' + '\tacc: ' + '\tval_acc: ' + '\n')
+f.write('epoch: ' + '\tloss: ' + '\tval_loss: ' + '\n')
 
 plot_model(model, to_file='model.png', show_shapes=True)
 
 ########################################################################################################################
 # Train the network
 ########################################################################################################################
-early_stopping = EarlyStopping(patience=15, verbose=1)
+early_stopping = EarlyStopping(patience=30, verbose=1)
 checkpoint = ModelCheckpoint(filepath='model.hdf5', save_best_only=True, verbose=1)
 csv_logger = CSVLogger('Training log.csv', separator=';',append=True)
 logger = LambdaCallback(on_epoch_end=lambda epoch, logs: f.write(str(epoch) +'\t'
@@ -240,7 +242,7 @@ logger = LambdaCallback(on_epoch_end=lambda epoch, logs: f.write(str(epoch) +'\t
 
 history = model.fit_generator(generator=training_generator,
                               steps_per_epoch=100,
-                              epochs=100,
+                              epochs=250,
                               validation_data=validation_generator,
                               validation_steps=len(validation_generator),
                               callbacks=[checkpoint, early_stopping, logger, csv_logger],
