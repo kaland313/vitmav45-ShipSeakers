@@ -202,9 +202,11 @@ class DataGenerator(Sequence):
         # Generate one batch of data'
         # Generate indexes of the batch
         indexes = self.indexes[index * self.batch_size:(index + 1) * self.batch_size]
+        print(indexes)
 
         # Find list of IDs
         self.list_IDs_temp = [self.list_IDs[k] for k in indexes]
+        print(self.list_IDs_temp)
 
         # Generate data
         X, Y = self.generate(self.list_IDs_temp)

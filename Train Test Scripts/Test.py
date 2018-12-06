@@ -39,12 +39,12 @@ set_session(tf.Session(config=config))
 ########################################################################################################################
 image_path = "/run/media/kalap/Storage/Deep learning 2/train_v2"
 segmentation_data_file_path = '/run/media/kalap/Storage/Deep learning 2/train_ship_segmentations_v2.csv'
-model_path = "../Train Test Scripts on AWS/Scripts/"
-# model_path = ""
+# model_path = "../Train Test Scripts on AWS/Scripts/"
+model_path = ""
 
-resize_img_to = (768, 768)
-# resize_img_to = (192, 192)
-batch_size = 1
+# resize_img_to = (768, 768)
+resize_img_to = (192, 192)
+batch_size = 16
 
 ########################################################################################################################
 # Load and prepare the data
@@ -57,8 +57,7 @@ df_train = pd.read_csv(segmentation_data_file_path)
 test_img_ids = np.load(model_path + "test_img_ids.npy")
 
 train_img_ids = np.load(model_path + "train_img_ids.npy")
-print(len(train_img_ids))
-exit()
+
 
 #######################################################################################################################
 # Load the network
@@ -90,5 +89,9 @@ test_generator = DataGenerator(
 
 for i in range(10):
     test_images, test_mask_true = test_generator.__getitem__(i)
+    test_ids, unique_ids = np.unique(test_generator.get_last_batch_ImageIDs(), return_index=True, axis=0)
+    test_images = test_images[unique_ids]
+    test_mask_true = test_mask_true[unique_ids]
+
     predictions = model.predict(test_images, verbose=1)
     disp_image_with_map2(test_images[0], test_mask_true[0], predictions[0])

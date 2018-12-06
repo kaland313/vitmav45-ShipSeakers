@@ -778,3 +778,82 @@ Epoch 51/500
 Epoch 00051: val_loss did not improve from -0.64552
 Epoch 52/500
 250/250 [==============================] - 414s 2s/step - loss: -0.6220 - val_loss: -0.5103
+
+
+
+
+
+
+
+
+
+
+
+
+Epoch 137/500
+50/250 [==============================] - 413s 2s/step - loss: -0.6912 - val_loss: -0.6754
+
+Epoch 00137: val_loss did not improve from -0.75215
+poch 138/500
+250/250 [==============================] - 414s 2s/step - loss: -0.6773 - val_loss: -0.6763
+
+Epoch 00138: val_loss did not improve from -0.75215
+Epoch 139/500
+250/250 [==============================] - 418s 2s/step - loss: -0.6971 - val_loss: -0.6435
+
+Epoch 00139: val_loss did not improve from -0.75215
+Epoch 140/500
+250/250 [==============================] - 422s 2s/step - loss: -0.7012 - val_loss: -0.6050
+
+Epoch 00140: val_loss did not improve from -0.75215
+Epoch 141/500
+250/250 [==============================] - 425s 2s/step - loss: -0.6897 - val_loss: -0.6920
+
+Epoch 00141: val_loss did not improve from -0.75215
+Epoch 142/500
+250/250 [==============================] - 414s 2s/step - loss: -0.7075 - val_loss: -0.6790
+
+Epoch 00142: val_loss did not improve from -0.75215
+Epoch 143/500
+250/250 [==============================] - 414s 2s/step - loss: -0.7040 - val_loss: -0.6928
+
+Epoch 00143: val_loss did not improve from -0.75215
+Epoch 144/500
+250/250 [==============================] - 424s 2s/step - loss: -0.7054 - val_loss: -0.6487
+
+Epoch 00144: val_loss did not improve from -0.75215
+Epoch 145/500
+250/250 [==============================] - 427s 2s/step - loss: -0.6983 - val_loss: -0.6777
+
+Epoch 00145: val_loss did not improve from -0.75215
+Epoch 146/500
+250/250 [==============================] - 415s 2s/step - loss: -0.6973 - val_loss: -0.7485
+
+Epoch 00146: val_loss did not improve from -0.75215
+Epoch 147/500
+250/250 [==============================] - 420s 2s/step - loss: -0.7089 - val_loss: -0.6732
+
+Epoch 00147: val_loss did not improve from -0.75215
+Epoch 148/500
+250/250 [==============================] - 415s 2s/step - loss: -0.7083 - val_loss: -0.7173
+
+Epoch 00148: val_loss did not improve from -0.75215
+Epoch 149/500
+250/250 [==============================] - 418s 2s/step - loss: -0.7127 - val_loss: -0.5495
+
+Epoch 00149: val_loss did not improve from -0.75215
+Epoch 150/500
+250/250 [==============================] - 424s 2s/step - loss: -0.7011 - val_loss: -0.6440
+
+Epoch 00150: val_loss did not improve from -0.75215
+Epoch 151/500
+250/250 [==============================] - 415s 2s/step - loss: -0.7118 - val_loss: -0.6422
+
+Epoch 00151: val_loss did not improve from -0.75215
+Epoch 152/500
+250/250 [==============================] - 416s 2s/step - loss: -0.7009 - val_loss: -0.6815
+
+Epoch 00152: val_loss did not improve from -0.75215
+Epoch 153/500
+250/250 [==============================] - 413s 2s/step - loss: -0.6998 - val_loss: -0.7057
+
