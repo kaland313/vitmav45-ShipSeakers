@@ -110,7 +110,8 @@ def disp_image_with_map2(img_matrix, mask_matrix_true, mask_matrix_pred, img_id=
     plt.title("Ground truth map")
 
     plt.subplot(1, 3, 3)
-    plt.imshow(mask_matrix_pred[:, :, 0], cmap='Greys', vmin=0, vmax=0.1)
+    # plt.imshow(mask_matrix_pred[:, :, 0], cmap='Greys', vmin=0, vmax=0.1)
+    plt.imshow(mask_matrix_pred[:, :, 0], cmap='Greys')
     plt.xticks([], "")
     plt.yticks([], "")
     plt.title("Predicted map")
@@ -271,3 +272,47 @@ def jacard_coef_loss(y_true, y_pred):
 
 def dice_coef_loss(y_true, y_pred):
     return -dice_coef(y_true, y_pred)
+
+
+
+########################################################################################################################
+# Confusion matrix plotter
+########################################################################################################################
+# Define a fency confusion matrix plotter (source: https://scikit-learn.org/stable/auto_examples/model_selection/plot_confusion_matrix.html)
+import seaborn as sns;
+import itertools
+# sns.heatmap(conf);
+def plot_confusion_matrix(cm, classes,
+                          normalize=False,
+                          title='Confusion matrix',
+                          cmap=plt.cm.Blues):
+    """
+    This function prints and plots the confusion matrix.
+    Normalization can be applied by setting `normalize=True`.
+    """
+    if normalize:
+        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+        print("Normalized confusion matrix")
+    else:
+        print('Confusion matrix, without normalization')
+
+    print(cm)
+
+    plt.imshow(cm, interpolation='nearest', cmap=cmap);
+    plt.title(title);
+    plt.colorbar();
+    tick_marks = np.arange(len(classes));
+    plt.xticks(tick_marks, classes, rotation=45);
+    plt.yticks(tick_marks, classes);
+
+    fmt = '.3f' if normalize else 'd'
+    thresh = cm.max() / 2.
+    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+        plt.text(j, i, format(cm[i, j], fmt),
+                 horizontalalignment="center",
+                 color="white" if cm[i, j] > thresh else "black");
+        plt.grid(False);
+
+    plt.ylabel('True label');
+    plt.xlabel('Predicted label');
+    plt.tight_layout();

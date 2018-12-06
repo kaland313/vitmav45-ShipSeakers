@@ -6,10 +6,18 @@ import pandas as pd
 import imageio
 import cv2
 from tqdm import tqdm
+import matplotlib.pyplot as plt
 
 from keras.applications import imagenet_utils
 from keras.utils import Sequence
 from keras import backend as K
+
+import matplotlib.pylab as pl
+from matplotlib.colors import ListedColormap
+cmap = pl.cm.viridis
+my_cmap = cmap(np.arange(cmap.N))
+my_cmap[:,-1] = np.linspace(0, 1, cmap.N)
+my_cmap = ListedColormap(my_cmap)
 
 def preprocess_input(x):
     """Preprocesses a Numpy array encoding a batch of images.
@@ -70,6 +78,53 @@ def rle_decode(mask_rle, shape=(768, 768)):
             mask[lo:hi] = 1
 
     return mask.reshape(shape).T  # Needed to align to RLE direction
+
+def disp_image_with_map(img_matrix, mask_matrix, img_id=""):
+    """
+    Displays the image image with the mask layed on top of it. Yellow highlight indicates the ships.
+    my_cmap is a color map which is transparent at one end it.
+    """
+    plt.imshow(img_matrix*0.5+0.5)
+    plt.imshow(mask_matrix[:, :, 0], alpha=0.5, cmap=my_cmap)
+    plt.axis('off')
+    plt.title(img_id)
+    plt.show()
+
+def disp_image_with_map2(img_matrix, mask_matrix_true, mask_matrix_pred, img_id=""):
+    """
+    Displays the image, the ground truth map and the predicted map
+    """
+    plt.figure(figsize=(15, 5))
+    plt.subplot(1, 3, 1)
+    plt.imshow(img_matrix * 0.5 + 0.5)
+    plt.xticks([], "")
+    plt.yticks([], "")
+    plt.title("Image " + img_id)
+
+    plt.subplot(1, 3, 2)
+    plt.imshow(mask_matrix_true[:, :, 0], cmap='Greys')
+    plt.xticks([], "")
+    plt.yticks([], "")
+    plt.title("Ground truth map")
+
+    plt.subplot(1, 3, 3)
+    # plt.imshow(mask_matrix_pred[:, :, 0], cmap='Greys', vmin=0, vmax=0.1)
+    plt.imshow(mask_matrix_pred[:, :, 0], cmap='Greys')
+    plt.xticks([], "")
+    plt.yticks([], "")
+    plt.title("Predicted map")
+
+    plt.show()
+
+def plot_history(network_history):
+    plt.figure()
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.plot(network_history.history['loss'])
+    plt.plot(network_history.history['val_loss'])
+    plt.legend(['Training', 'Validation'])
+    plt.show()
+
 
 # Reference: https://stanford.edu/~shervine/blog/keras-how-to-generate-data-on-the-fly
 class DataGenerator(Sequence):
@@ -216,3 +271,45 @@ def jacard_coef_loss(y_true, y_pred):
 
 def dice_coef_loss(y_true, y_pred):
     return -dice_coef(y_true, y_pred)
+
+########################################################################################################################
+# Confusion matrix plotter
+########################################################################################################################
+# Define a fency confusion matrix plotter (source: https://scikit-learn.org/stable/auto_examples/model_selection/plot_confusion_matrix.html)
+import seaborn as sns;
+import itertools
+# sns.heatmap(conf);
+def plot_confusion_matrix(cm, classes,
+                          normalize=False,
+                          title='Confusion matrix',
+                          cmap=plt.cm.Blues):
+    """
+    This function prints and plots the confusion matrix.
+    Normalization can be applied by setting `normalize=True`.
+    """
+    if normalize:
+        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+        print("Normalized confusion matrix")
+    else:
+        print('Confusion matrix, without normalization')
+
+    print(cm)
+
+    plt.imshow(cm, interpolation='nearest', cmap=cmap);
+    plt.title(title);
+    plt.colorbar();
+    tick_marks = np.arange(len(classes));
+    plt.xticks(tick_marks, classes, rotation=45);
+    plt.yticks(tick_marks, classes);
+
+    fmt = '.3f' if normalize else 'd'
+    thresh = cm.max() / 2.
+    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+        plt.text(j, i, format(cm[i, j], fmt),
+                 horizontalalignment="center",
+                 color="white" if cm[i, j] > thresh else "black");
+        plt.grid(False);
+
+    plt.ylabel('True label');
+    plt.xlabel('Predicted label');
+    plt.tight_layout();

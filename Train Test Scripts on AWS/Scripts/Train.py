@@ -64,7 +64,7 @@ test_split = 0.15
 # resize_img_to = (384, 384)
 resize_img_to = (256, 256)
 # resize_img_to = (192, 192)
-batch_size = 4
+batch_size = 16
 
 ########################################################################################################################
 # Load and prepare the data
@@ -231,7 +231,7 @@ plot_model(model, to_file='model.png', show_shapes=True)
 ########################################################################################################################
 # Train the network
 ########################################################################################################################
-early_stopping = EarlyStopping(patience=30, verbose=1)
+early_stopping = EarlyStopping(patience=50, verbose=1)
 checkpoint = ModelCheckpoint(filepath='model.hdf5', save_best_only=True, verbose=1)
 csv_logger = CSVLogger('Training log.csv', separator=';',append=True)
 logger = LambdaCallback(on_epoch_end=lambda epoch, logs: f.write(str(epoch) +'\t'
@@ -241,10 +241,10 @@ logger = LambdaCallback(on_epoch_end=lambda epoch, logs: f.write(str(epoch) +'\t
                         on_train_end=lambda logs: f.close())
 
 history = model.fit_generator(generator=training_generator,
-                              steps_per_epoch=100,
-                              epochs=250,
+                              steps_per_epoch=250,
+                              epochs=500,
                               validation_data=validation_generator,
                               validation_steps=len(validation_generator),
-                              callbacks=[checkpoint, early_stopping, logger, csv_logger],
+                              callbacks=[checkpoint, logger, csv_logger],
                               verbose=1)
 

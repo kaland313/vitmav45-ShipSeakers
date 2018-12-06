@@ -27,6 +27,7 @@ from ShipSegFunctions import *
 import tensorflow as tf
 from keras.backend.tensorflow_backend import set_session
 config = tf.ConfigProto(device_count = {'GPU': 0}) # Use CPU for the testing
+# config = tf.ConfigProto() # Use GPU
 # config.gpu_options.allow_growth = True
 set_session(tf.Session(config=config))
 # Device check
@@ -38,8 +39,8 @@ set_session(tf.Session(config=config))
 ########################################################################################################################
 image_path = "/run/media/kalap/Storage/Deep learning 2/train_v2"
 segmentation_data_file_path = '/run/media/kalap/Storage/Deep learning 2/train_ship_segmentations_v2.csv'
-# model_path = "../Train Test Scripts on AWS/Scripts/"
-model_path = ""
+model_path = "../Train Test Scripts on AWS/Scripts/"
+# model_path = ""
 
 resize_img_to = (768, 768)
 # resize_img_to = (192, 192)
@@ -55,6 +56,10 @@ df_train = pd.read_csv(segmentation_data_file_path)
 # Load the test data ids saved by the Train file
 test_img_ids = np.load(model_path + "test_img_ids.npy")
 
+train_img_ids = np.load(model_path + "train_img_ids.npy")
+print(len(train_img_ids))
+exit()
+
 #######################################################################################################################
 # Load the network
 ########################################################################################################################
@@ -67,15 +72,15 @@ print("#################################################################")
 print("# Testing")
 print("#################################################################")
 
-rgb_channels_number = 3
-
 test_generator = DataGenerator(
     test_img_ids,
     df_train,
     image_path,
     batch_size=batch_size,
     dim=resize_img_to,
-    n_channels=rgb_channels_number
+    shuffle_on_every_epoch=False,
+    shuffle_on_init=False,
+    split_to_sub_img=False
 )
 
 
