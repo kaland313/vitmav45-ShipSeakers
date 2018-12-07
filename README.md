@@ -32,7 +32,7 @@ The folder train_img contains all the images downloaded as the train_v2.zip
     ├── ShipSegFunctions.py - a file containing important multi-use functions, sort of a project library
     ├── model.hdf5 - The model saved with complete structure and weights
     ├── model.png - Plot of the model structure
-    ├── Evaluation.ypnb - The result visualization and evaluation notebook
+    ├── Evaluation.ipynb - The result visualization and evaluation notebook
     ├── Img
         └── Test images with ground truth and predicted segmentation maps (in separate files
     ├── Training history
@@ -43,24 +43,27 @@ The folder train_img contains all the images downloaded as the train_v2.zip
 ```
 
 ## Data exploration and preparation script - Milestone I
+The training data is analysed and visualised in  the [ShipDetectionDataPrep.ipynb](ShipDetectionDataPrep.ipynb) Jupyter Notebook.
 The script can be executed if a few images are included in the train_img folder. Whithout this it can't show examples for different scenarios apperaring in the dataset. 
 
-## Model, Training and Evaluation
+## Training
 The ShipSegFunctions.py script mostly conains functions and the generator class which are are to run the train and test scripts.
 
 The Train.py sript loads and preprocesses the data for training, it includes network definitions and the training. The dataset is split into training and test partitions, but the testing is done in a separate file so the IDs of the test dataset are stored in test_img_ids.npy. The model is saved to model.hdf5 after every epoch which improves on the network performance.
 
-The evaluation and visualisation of the network performance is shown in Model, Training and Evaluation/Scripts/Evaluation.ypnb. 
-
-
 ## The trained network
 The trained network is a typical Unet architecture network, presented in the paper by Ronneberger (https://arxiv.org/abs/1505.04597), which is widely used for semantic segmentation. 
-The structure of network is presented on the  Model, Training and Evaluation/Scripts/model.png. 
+The structure of network is presented on the  [model.png](Model%2C%20Training%20and%20Evaluation/Scripts/model.png). 
 
 ## Results 
 The large dataset containing more than a hundred thousand marine satellite images was analysed and
 a deep fully convolutional network based solution to perform semantic segmentation of ships on this
 images was presented. The network based on the U-Net architecture was successfully implemented,
 trained and tested. The best achieved dice coefficient on our test set was 0.714.
-One prediction it made can be seen on the ExamplePrediction.png. 
+
+The evaluation and visualisation of the network performance is presented in the [Evaluation.ipynb](Model%2C%20Training%20and%20Evaluation/Scripts/Evaluation.ipynb) Jupyter Notebook. 
+
+One prediction the network made can be seen on the picture below. 
 ![Example predictions](https://github.com/kaland313/vitmav45-ShipSeakers/blob/master/ExamplePrediction.png)
+
+Full resolution predictions can be found in the [Evaluation.ipynb](Model%2C%20Training%20and%20Evaluation/Scripts/Evaluation.ipynb) Jupyter Notebook or the [Img folder](Model%2C%20Training%20and%20Evaluation/Scripts/Img). 
