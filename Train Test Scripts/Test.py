@@ -49,6 +49,11 @@ batch_size = 16
 ########################################################################################################################
 # Load and prepare the data
 ########################################################################################################################
+conf = np.array([[  9.99012040e-01,    9.87960492e-04], [  3.50860052e-01,   6.49139948e-01]])
+plt.figure(figsize=(3,3))
+plot_confusion_matrix(conf,classes=["Non-ship", "Ship"], normalize=True);
+plt.show()
+
 
 # Load the file which contains the masks for each image
 df_train = pd.read_csv(segmentation_data_file_path)
