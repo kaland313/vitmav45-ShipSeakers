@@ -67,3 +67,8 @@ One prediction the network made can be seen on the picture below.
 ![Example predictions](https://github.com/kaland313/vitmav45-ShipSeakers/blob/master/ExamplePrediction.png)
 
 More predictions can be found in the [Evaluation.ipynb](Model%2C%20Training%20and%20Evaluation/Scripts/Evaluation.ipynb) Jupyter Notebook and some full resolution images and corresponding segmentation maps (ground truth and predicted) are located in the [Img folder](Model%2C%20Training%20and%20Evaluation/Scripts/Img). 
+
+## Report
+A written report in English (including an abstract) is located in the [Report](Report) folder: [ShipSeakersReport.pdf](Report/ShipSeakersReport.pdf).
+
+The Hungarian abstract is can be founc in [ship_seakers_abstract_hun.pdf](Report/ship_seakers_abstract_hun.pdf)
