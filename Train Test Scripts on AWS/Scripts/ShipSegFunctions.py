@@ -130,13 +130,16 @@ def plot_history(network_history):
 class DataGenerator(Sequence):
 
     def __init__(self, list_IDs, ship_seg_df, img_path_prefix, batch_size=32, dim=(32, 32), split_to_sub_img=True,
-                 n_channels=3, shuffle_on_every_epoch=True, shuffle_on_init = True, forced_len=0):
+                 n_channels=3, shuffle_on_every_epoch=True, shuffle_on_init = True, forced_len=0, drop_duplicates=False):
         # Initialization
         self.dim = dim  # dataset's dimension
         self.img_prefix = img_path_prefix  # location of the dataset
         self.batch_size = batch_size  # number of data/epoch
         self.ship_seg_df = ship_seg_df.copy()  # a dataframe storing the filenames and ship masks
-        self.list_IDs = list_IDs  # a list containing image names to be used by the generator
+        if drop_duplicates:
+            self.list_IDs = np.unique(list_IDs)  # a list containing image names to be used by the generator
+        else:
+            self.list_IDs = list_IDs  # a list containing image names to be used by the generator
         self.n_channels = n_channels  # number of rgb chanels
 
         self.forced_len = forced_len #Needed due to a bug in predict_generator
