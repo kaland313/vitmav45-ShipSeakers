@@ -24,33 +24,43 @@ We used Python 3.6 with Keras and Tensorflow and some other necessary packages.
 The folder train_img contains all the images downloaded as the train_v2.zip
 ```
 ├── ShipDetectionDataPrep.ipynb
-└── data/
+└── data/ - sample data
     ├── train_ship_segmentations_v2.csv
     └── train_img/
-└── Train Test Scripts/
-    ├── Train.py
-    ├── ShipSegFunctions.py
-    ├── Test.py
-    ├── model.hdf5
-    ├── model.png
-    └── test_img_ids.npy
+└── Model, Training and Evaluation/Scripts/
+    ├── Train.py -  Script used to train the model
+    ├── ShipSegFunctions.py - a file containing important multi-use functions, sort of a project library
+    ├── model.hdf5 - The model saved with complete structure and weights
+    ├── model.png - Plot of the model structure
+    ├── Evaluation.ypnb - The result visualization and evaluation notebook
+    ├── Img
+        └── Test images with ground truth and predicted segmentation maps (in separate files
+    ├── Training history
+        └── Various files showing the training history, log 
+    ├── train_img_ids.npy - a file binary storing image file names of the training partition
+    ├── valid_img_ids.npy - a file binary storing image file names of the validation partition
+    └── test_img_ids.npy  - a file binary storing image file names of the test partition
 ```
 
-## Running the data preparation script
+## Data exploration and preparation script - Milestone I
 The script can be executed if a few images are included in the train_img folder. Whithout this it can't show examples for different scenarios apperaring in the dataset. 
 
-## The train and test scripts
+## Model, Training and Evaluation
 The ShipSegFunctions.py script mostly conains functions and the generator class which are are to run the train and test scripts.
 
 The Train.py sript loads and preprocesses the data for training, it includes network definitions and the training. The dataset is split into training and test partitions, but the testing is done in a separate file so the IDs of the test dataset are stored in test_img_ids.npy. The model is saved to model.hdf5 after every epoch which improves on the network performance.
 
-Test.py atthe moment only produces predictions for a few images, later we intend to implement proper analysis of the test results. 
+The evaluation and visualisation of the network performance is shown in Model, Training and Evaluation/Scripts/Evaluation.ypnb. 
+
 
 ## The trained network
-The trained network is a typical Unet architecture network, presented in the paper by Ronneberger (https://arxiv.org/abs/1505.04597), which is widely used for semantic segmentation. Due to memory limitations of the available GPU used during the first trainings the images were downsampled to 192x192 pixes and less layers were used compared to the original paper.
-The structure of network is presented on the Train Test Scripts/model.png. 
+The trained network is a typical Unet architecture network, presented in the paper by Ronneberger (https://arxiv.org/abs/1505.04597), which is widely used for semantic segmentation. 
+The structure of network is presented on the  Model, Training and Evaluation/Scripts/model.png. 
 
 ## Results 
-A network was trained for 10 epochs, during each epoch only 1600 images were shown to the network in bathces of 8. We used the adam optimizer with binary crossentropy lossfunction. 
-The network managed to learn the basic ship recognition tast, but clearly needs significant improvements. One prediction it made can be seen on the ExamplePrediction.png. 
+The large dataset containing more than a hundred thousand marine satellite images was analysed and
+a deep fully convolutional network based solution to perform semantic segmentation of ships on this
+images was presented. The network based on the U-Net architecture was successfully implemented,
+trained and tested. The best achieved dice coefficient on our test set was 0.714.
+One prediction it made can be seen on the ExamplePrediction.png. 
 ![Example predictions](https://github.com/kaland313/vitmav45-ShipSeakers/blob/master/ExamplePrediction.png)
