@@ -82,16 +82,33 @@ test_generator = DataGenerator(
     split_to_sub_img=False
 )
 
+tmp_images, tmp_masks_true = test_generator.__getitem__(0)
 
-# predictions = model.predict_generator(test_generator,
-#                                       steps=1, verbose =1)
+tmp_ids, unique_ids = np.unique(test_generator.get_last_batch_ImageIDs(), return_index=True, axis=0)
+tmp_images = tmp_images[unique_ids]
+tmp_masks_true = tmp_masks_true[unique_ids]
+
+predictions_tmp = model.predict(tmp_images, verbose=1)
+test_images = tmp_images
+test_mask_true = tmp_masks_true
+predictions = predictions_tmp
+
+test_ratio = 0.01
+for i in tqdm(range(1, 2)):
+    tmp_images, tmp_masks_true = test_generator.__getitem__(i)
+
+    tmp_ids, unique_ids = np.unique(test_generator.get_last_batch_ImageIDs(), return_index=True, axis=0)
+    tmp_images = tmp_images[unique_ids]
+    tmp_masks_true = tmp_masks_true[unique_ids]
+
+    predictions_tmp = model.predict(tmp_images, verbose=0)
+
+    test_images = np.concatenate((test_images, tmp_images), axis=0)
+    test_mask_true = np.concatenate((test_mask_true, tmp_masks_true), axis=0)
+    predictions = np.concatenate((predictions, predictions_tmp), axis=0)
 
 
-for i in range(10):
-    test_images, test_mask_true = test_generator.__getitem__(i)
-    test_ids, unique_ids = np.unique(test_generator.get_last_batch_ImageIDs(), return_index=True, axis=0)
-    test_images = test_images[unique_ids]
-    test_mask_true = test_mask_true[unique_ids]
-
-    predictions = model.predict(test_images, verbose=1)
-    disp_image_with_map2(test_images[0], test_mask_true[0], predictions[0])
+print(predictions.shape)
+for i in range(20):
+    disp_image_with_map2(test_images[i], test_mask_true[i], predictions[i])
+    print(test_mask_true[i].shape)
